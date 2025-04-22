@@ -1,0 +1,92 @@
+package arcade.vista;
+
+import arcade.juegos.nreinas.ResultadoNReinas;
+import arcade.persistencia.Partida;
+
+import javax.swing.*;
+import java.awt.*;
+
+public class PanelNReinas extends JPanel {
+
+    private static final int N = 8;
+    private final JButton[][] celdas = new JButton[N][N];
+    private final int[][] tablero = new int[N][N];
+    private final JPanel panelTablero;
+    private final JLabel mensajeLabel;
+
+    public PanelNReinas() {
+        setLayout(new BorderLayout());
+
+        panelTablero = new JPanel(new GridLayout(N, N));
+        panelTablero.setPreferredSize(new Dimension(500, 500));
+        panelTablero.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+        inicializarTablero();
+
+        mensajeLabel = new JLabel("Haz clic para colocar o quitar reinas", SwingConstants.CENTER);
+
+        JButton validarBtn = new JButton("Validar solución");
+        validarBtn.addActionListener(e -> validar());
+
+        add(mensajeLabel, BorderLayout.NORTH);
+        add(panelTablero, BorderLayout.CENTER);
+        add(validarBtn, BorderLayout.SOUTH);
+    }
+
+    private void inicializarTablero() {
+        for (int fila = 0; fila < N; fila++) {
+            for (int col = 0; col < N; col++) {
+                JButton celda = new JButton();
+                celda.setBackground((fila + col) % 2 == 0 ? Color.WHITE : new Color(200, 200, 200));
+                celda.setFont(new Font("SansSerif", Font.BOLD, 24));
+                final int f = fila;
+                final int c = col;
+                celda.addActionListener(e -> toggleReina(f, c));
+                celdas[fila][col] = celda;
+                panelTablero.add(celda);
+            }
+        }
+    }
+
+    private void toggleReina(int fila, int col) {
+        if (tablero[fila][col] == 0) {
+            tablero[fila][col] = 1;
+            celdas[fila][col].setText("Q");
+        } else {
+            tablero[fila][col] = 0;
+            celdas[fila][col].setText("");
+        }
+    }
+
+    private void validar() {
+        boolean valido = esValido();
+        mensajeLabel.setText(valido ? "¡Solución válida!" : "Las reinas se atacan entre sí.");
+        // Guardar el resultado
+        ResultadoNReinas resultado = new ResultadoNReinas(N, valido);
+        Partida partida = resultado.toPartida();
+        partida.guardar();
+    }
+
+    private boolean esValido() {
+        for (int fila1 = 0; fila1 < N; fila1++) {
+            for (int col1 = 0; col1 < N; col1++) {
+                if (tablero[fila1][col1] == 1) {
+                    for (int fila2 = 0; fila2 < N; fila2++) {
+                        for (int col2 = 0; col2 < N; col2++) {
+                            if ((fila1 != fila2 || col1 != col2) && tablero[fila2][col2] == 1) {
+                                // ✅ Mismo fila
+                                if (fila1 == fila2) return false;
+                                // ✅ Mismo columna
+                                if (col1 == col2) return false;
+                                // ✅ Mismo diagonal
+                                if (Math.abs(fila1 - fila2) == Math.abs(col1 - col2)) return false;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+
+}

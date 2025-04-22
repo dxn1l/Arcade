@@ -1,0 +1,4 @@
+package arcade.persistencia;
+
+public class HibernateUtils {
+}

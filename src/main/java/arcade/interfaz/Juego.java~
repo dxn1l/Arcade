@@ -1,0 +1,4 @@
+package arcade.interfaz;
+
+public class Juego {
+}

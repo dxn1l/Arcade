@@ -1,0 +1,62 @@
+package arcade.persistencia;
+
+import jakarta.persistence.*;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Entity
+public class Partida {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String tipoJuego;
+    private String resumen;
+    private LocalDateTime fecha;
+
+    public Partida() {}
+
+    public Partida(String tipoJuego, String resumen, LocalDateTime fecha) {
+        this.tipoJuego = tipoJuego;
+        this.resumen = resumen;
+        this.fecha = fecha;
+    }
+
+    public String getTipoJuego() {
+        return tipoJuego;
+    }
+
+    public String getResumen() {
+        return resumen;
+    }
+
+    public LocalDateTime getFecha() {
+        return fecha;
+    }
+
+    public void guardar() {
+        var session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+        session.persist(this);
+        session.getTransaction().commit();
+        session.close();
+    }
+
+    public static List<Partida> obtenerHistorial() {
+        var session = HibernateUtil.getSessionFactory().openSession();
+        List<Partida> lista = session.createQuery("from Partida", Partida.class).list();
+        session.close();
+        return lista;
+    }
+
+    public static void eliminarTodas() {
+        var session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+        session.createQuery("delete from Partida").executeUpdate();
+        session.getTransaction().commit();
+        session.close();
+    }
+}
+
