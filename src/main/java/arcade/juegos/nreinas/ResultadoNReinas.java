@@ -16,6 +16,6 @@ public class ResultadoNReinas {
     public Partida toPartida() {
         String resumen = solucion ? "Solución encontrada para N = " + N
                 : "No se encontró solución para N = " + N;
-        return new Partida("NReinas", resumen, LocalDateTime.now());
+        return new Partida("NReinas-" + N, resumen, LocalDateTime.now());
     }
 }

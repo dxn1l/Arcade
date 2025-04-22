@@ -58,5 +58,17 @@ public class Partida {
         session.getTransaction().commit();
         session.close();
     }
+
+    @Override
+    public String toString() {
+        return "[" + fecha + "] <font color='" + getColorHTML() + "'>" + tipoJuego + "</font> - " + resumen;
+    }
+
+    public String getColorHTML() {
+        if (tipoJuego.equals("NReinas-4")) return "green";
+        if (tipoJuego.equals("NReinas-6")) return "orange";
+        if (tipoJuego.equals("NReinas-8")) return "red";
+        return "black";
+    }
 }
 

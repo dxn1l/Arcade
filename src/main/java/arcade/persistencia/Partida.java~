@@ -50,5 +50,20 @@ public class Partida {
         session.close();
         return lista;
     }
+
+    public static void eliminarTodas() {
+        var session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+        session.createQuery("delete from Partida").executeUpdate();
+        session.getTransaction().commit();
+        session.close();
+    }
+
+    public String getColorHTML() {
+        if (tipoJuego.equals("NReinas-4")) return "green";
+        if (tipoJuego.equals("NReinas-6")) return "orange";
+        if (tipoJuego.equals("NReinas-8")) return "red";
+        return "black";
+    }
 }
 

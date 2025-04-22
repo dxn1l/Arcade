@@ -8,16 +8,27 @@ import java.awt.*;
 
 public class PanelNReinas extends JPanel {
 
-    private static final int N = 8;
-    private final JButton[][] celdas = new JButton[N][N];
-    private final int[][] tablero = new int[N][N];
+    private final int N ;
+    private final JButton[][] celdas ;
+    private final int[][] tablero ;
 
     private final JPanel panelTablero;
     private final JLabel mensajeLabel;
     private final JLabel contadorLabel;
+    private final JLabel cantidadLabel;
 
-    public PanelNReinas() {
+    public PanelNReinas(int N) {
+
+        this.N = N;
+        this.celdas = new JButton[N][N];
+        this.tablero = new int[N][N];
+
         setLayout(new BorderLayout());
+
+        cantidadLabel = new JLabel("Debes colocar exactamente " + N + " reinas.", SwingConstants.CENTER);
+        cantidadLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
+        cantidadLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 5, 10));
+        add(cantidadLabel, BorderLayout.NORTH);
 
         panelTablero = new JPanel(new GridLayout(N, N));
         panelTablero.setPreferredSize(new Dimension(500, 500));
@@ -25,12 +36,13 @@ public class PanelNReinas extends JPanel {
         inicializarTablero();
         add(panelTablero, BorderLayout.CENTER);
 
-        mensajeLabel = new JLabel("Haz clic para colocar o quitar reinas", SwingConstants.CENTER);
-        mensajeLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
-        mensajeLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        add(mensajeLabel, BorderLayout.NORTH);
-
         JPanel panelInferior = new JPanel(new FlowLayout());
+
+        mensajeLabel = new JLabel("Haz clic para colocar o quitar reinas", SwingConstants.CENTER);
+        mensajeLabel.setFont(new Font("SansSerif", Font.PLAIN, 13));
+
+
+        contadorLabel = new JLabel("Reinas colocadas: 0");
 
         JButton validarBtn = new JButton("Validar solución");
         validarBtn.addActionListener(e -> validar());
@@ -38,13 +50,13 @@ public class PanelNReinas extends JPanel {
         JButton reiniciarBtn = new JButton("Reiniciar tablero");
         reiniciarBtn.addActionListener(e -> reiniciarTablero());
 
-        contadorLabel = new JLabel("Reinas colocadas: 0");
 
         panelInferior.add(validarBtn);
         panelInferior.add(reiniciarBtn);
         panelInferior.add(contadorLabel);
 
-        add(panelInferior, BorderLayout.SOUTH);
+        add(mensajeLabel, BorderLayout.SOUTH);
+        add(panelInferior, BorderLayout.PAGE_END);
 
     }
 
@@ -64,7 +76,17 @@ public class PanelNReinas extends JPanel {
     }
 
     private void toggleReina(int fila, int col) {
+
+        int colocadas = contarReinas();
+
         if (tablero[fila][col] == 0) {
+            if (colocadas >= N) {
+                JOptionPane.showMessageDialog(this,
+                        "Solo puedes colocar " + N + " reinas.",
+                        "Límite alcanzado",
+                        JOptionPane.WARNING_MESSAGE);
+                return;
+            }
             tablero[fila][col] = 1;
             celdas[fila][col].setText("Q");
         } else {
@@ -75,16 +97,28 @@ public class PanelNReinas extends JPanel {
     }
 
     private void actualizarContador() {
+        contadorLabel.setText("Reinas colocadas: " + contarReinas());
+    }
+
+    private int contarReinas() {
         int contador = 0;
         for (int[] fila : tablero) {
             for (int val : fila) {
                 if (val == 1) contador++;
             }
         }
-        contadorLabel.setText("Reinas colocadas: " + contador);
+        return contador;
     }
 
     private void validar() {
+        int colocadas = contarReinas();
+        if (colocadas < N) {
+            JOptionPane.showMessageDialog(this,
+                    "Debes colocar exactamente " + N + " reinas antes de validar.",
+                    "Reinas insuficientes",
+                    JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
         boolean valido = esValido();
         mensajeLabel.setText(valido ? "¡Solución válida!" : "Las reinas se atacan entre sí.");
 
@@ -111,12 +145,10 @@ public class PanelNReinas extends JPanel {
                     for (int fila2 = 0; fila2 < N; fila2++) {
                         for (int col2 = 0; col2 < N; col2++) {
                             if ((fila1 != fila2 || col1 != col2) && tablero[fila2][col2] == 1) {
-
-                                if (fila1 == fila2) return false;
-
-                                if (col1 == col2) return false;
-
-                                if (Math.abs(fila1 - fila2) == Math.abs(col1 - col2)) return false;
+                                if (fila1 == fila2 || col1 == col2 ||
+                                        Math.abs(fila1 - fila2) == Math.abs(col1 - col2)) {
+                                    return false;
+                                }
                             }
                         }
                     }

@@ -17,23 +17,7 @@ public class MenuPrincipal extends JFrame {
 
         JMenu menuJuegos = new JMenu("Juegos");
         JMenuItem itemNReinas = new JMenuItem("N Reinas");
-        itemNReinas.addActionListener(e -> {
-            String[] opciones = {"4x4", "6x6", "8x8"};
-            String seleccion = (String) JOptionPane.showInputDialog(
-                    this,
-                    "Selecciona el tamaño del tablero:",
-                    "Tamaño del tablero",
-                    JOptionPane.QUESTION_MESSAGE,
-                    null,
-                    opciones,
-                    "8x8"
-            );
-
-            if (seleccion != null) {
-                int n = Integer.parseInt(seleccion.substring(0, 1));
-                mostrarPanel(new PanelNReinas(n));
-            }
-        });
+        itemNReinas.addActionListener(e -> mostrarPanel(new PanelNReinas()));
 
         // Aquí después podés añadir:
         // JMenuItem itemCaballo = new JMenuItem("Recorrido del Caballo");
