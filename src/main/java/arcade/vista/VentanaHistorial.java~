@@ -72,6 +72,7 @@ public class VentanaHistorial extends JFrame {
         for (Partida p : partidas) {
             sb.append(p.toString()).append("<br>");
         }
+
         if (partidas.isEmpty()) {
             sb.append("No hay partidas guardadas.");
         }

@@ -120,7 +120,19 @@ public class PanelNReinas extends JPanel {
             return;
         }
         boolean valido = esValido();
-        mensajeLabel.setText(valido ? "¡Solución válida!" : "Las reinas se atacan entre sí.");
+        if (valido) {
+            mensajeLabel.setText("¡Solución válida!");
+            JOptionPane.showMessageDialog(this,
+                    "¡Se encontró una solución válida para N = " + N + "!",
+                    "Éxito",
+                    JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            mensajeLabel.setText("Las reinas se atacan entre sí.");
+            JOptionPane.showMessageDialog(this,
+                    "La disposición no es válida. Las reinas se están atacando.",
+                    "Error de solución",
+                    JOptionPane.WARNING_MESSAGE);
+        }
 
         ResultadoNReinas resultado = new ResultadoNReinas(N, valido);
         Partida partida = resultado.toPartida();
@@ -145,12 +157,10 @@ public class PanelNReinas extends JPanel {
                     for (int fila2 = 0; fila2 < N; fila2++) {
                         for (int col2 = 0; col2 < N; col2++) {
                             if ((fila1 != fila2 || col1 != col2) && tablero[fila2][col2] == 1) {
-
-                                if (fila1 == fila2) return false;
-
-                                if (col1 == col2) return false;
-
-                                if (Math.abs(fila1 - fila2) == Math.abs(col1 - col2)) return false;
+                                if (fila1 == fila2 || col1 == col2 ||
+                                        Math.abs(fila1 - fila2) == Math.abs(col1 - col2)) {
+                                    return false;
+                                }
                             }
                         }
                     }

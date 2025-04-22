@@ -120,7 +120,19 @@ public class PanelNReinas extends JPanel {
             return;
         }
         boolean valido = esValido();
-        mensajeLabel.setText(valido ? "¡Solución válida!" : "Las reinas se atacan entre sí.");
+        if (valido) {
+            mensajeLabel.setText("¡Solución válida!");
+            JOptionPane.showMessageDialog(this,
+                    "¡Se encontró una solución válida para N = " + N + "!",
+                    "Éxito",
+                    JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            mensajeLabel.setText("Las reinas se atacan entre sí.");
+            JOptionPane.showMessageDialog(this,
+                    "No se encontronó una solución válida para N = " + N + ". Las reinas se están atacando.",
+                    "Error de solución",
+                    JOptionPane.WARNING_MESSAGE);
+        }
 
         ResultadoNReinas resultado = new ResultadoNReinas(N, valido);
         Partida partida = resultado.toPartida();

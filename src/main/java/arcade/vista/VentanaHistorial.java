@@ -63,7 +63,7 @@ public class VentanaHistorial extends JFrame {
 
         if (!"Todos".equals(tipoFiltro)) {
             partidas = partidas.stream()
-                    .filter(p -> p.getTipoJuego().equals(tipoFiltro))
+                    .filter(p -> p.getTipoJuego().startsWith(tipoFiltro))
                     .collect(Collectors.toList());
         }
 
