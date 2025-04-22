@@ -1,0 +1,92 @@
+@startuml
+' Título opcional
+title Diagrama de Objetos - Máquina Arcade con N Reinas, Caballo y Hanoi
+
+' Objetos comunes
+object MenuPrincipal {
+  estado = "Juego finalizado"
+}
+
+object JuegoFactory {
+  tipo = "AbstractFactory"
+}
+
+object Persistencia {
+  motor = "Hibernate"
+  bd = "H2 embebida"
+}
+
+' N Reinas
+object JuegoNReinas {
+  tipo = "NReinas"
+  N = 8
+  solucion = "Encontrada"
+}
+
+object TableroNReinas {
+  tamaño = "8x8"
+  reinas = "8 colocadas"
+}
+
+object ControladorNReinas {
+  coordina = "flujo NReinas"
+}
+
+' Recorrido del Caballo
+object JuegoCaballo {
+  tipo = "RecorridoCaballo"
+  tamaño = "8x8"
+  inicio = "(0,0)"
+  completado = true
+}
+
+object TableroCaballo {
+  recorrido = "Secuencia completa"
+}
+
+object ControladorCaballo {
+  coordina = "flujo Caballo"
+}
+
+' Torres de Hanoi
+object JuegoHanoi {
+  tipo = "TorresHanoi"
+  discos = 4
+  movimientos = 15
+  resuelto = true
+}
+
+object Torres {
+  origen = "Vacia"
+  destino = "Discos ordenados"
+  auxiliar = "Vacia"
+}
+
+object ControladorHanoi {
+  coordina = "flujo Hanoi"
+}
+
+' Relaciones
+MenuPrincipal --> JuegoFactory : solicita Juegos
+
+JuegoFactory --> JuegoNReinas : crea
+JuegoFactory --> JuegoCaballo : crea
+JuegoFactory --> JuegoHanoi : crea
+
+JuegoNReinas --> TableroNReinas
+JuegoCaballo --> TableroCaballo
+JuegoHanoi --> Torres
+
+MenuPrincipal --> ControladorNReinas
+MenuPrincipal --> ControladorCaballo
+MenuPrincipal --> ControladorHanoi
+
+ControladorNReinas --> JuegoNReinas : ejecuta
+ControladorCaballo --> JuegoCaballo : ejecuta
+ControladorHanoi --> JuegoHanoi : ejecuta
+
+ControladorNReinas --> Persistencia : guarda datos
+ControladorCaballo --> Persistencia : guarda datos
+ControladorHanoi --> Persistencia : guarda datos
+
+@enduml

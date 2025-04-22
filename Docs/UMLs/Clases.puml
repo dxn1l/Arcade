@@ -1,0 +1,89 @@
+@startuml
+title Diagrama de Clases - Máquina Arcade
+
+' INTERFACES Y CLASES BASE
+interface Juego {
+  +void iniciar()
+  +void resolver()
+  +Resultado obtenerResultado()
+}
+
+class JuegoFactory {
+  +Juego crearJuego(String tipo)
+}
+
+class JuegoFacade {
+  +void iniciarJuego(String tipo)
+  +Resultado ejecutar(String tipo)
+}
+
+class Resultado {
+  -String tipoJuego
+  -String datos
+  +String getResumen()
+}
+
+' JUEGOS ESPECÍFICOS
+class JuegoNReinas implements Juego {
+  -int N
+  -boolean solucionEncontrada
+  +void resolver()
+}
+
+class JuegoCaballo implements Juego {
+  -int tamaño
+  -Coordenada inicio
+  +void resolver()
+}
+
+class JuegoHanoi implements Juego {
+  -int discos
+  -int movimientos
+  +void resolver()
+}
+
+' CONTROLADORES
+class ControladorJuego {
+  -Juego juego
+  +void iniciar(String tipo)
+  +void resolverJuego()
+  +Resultado obtenerResultado()
+}
+
+' VISTAS
+class VentanaPrincipal
+class PanelNReinas
+class PanelCaballo
+class PanelHanoi
+
+' PERSISTENCIA
+class HibernateUtil <<Singleton>> {
+  +SessionFactory getSessionFactory()
+}
+
+class Partida {
+  -int id
+  -String tipoJuego
+  -String fecha
+  -String resumen
+  +void guardar()
+}
+
+' RELACIONES
+JuegoFactory --> Juego : crea
+JuegoFacade --> Juego
+JuegoFacade --> Resultado
+ControladorJuego --> Juego
+ControladorJuego --> Resultado
+VentanaPrincipal --> PanelNReinas
+VentanaPrincipal --> PanelCaballo
+VentanaPrincipal --> PanelHanoi
+HibernateUtil --> Partida
+ControladorJuego --> Partida : guarda resultado
+
+' HERENCIAS
+Juego <|.. JuegoNReinas
+Juego <|.. JuegoCaballo
+Juego <|.. JuegoHanoi
+
+@enduml

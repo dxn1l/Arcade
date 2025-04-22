@@ -1,0 +1,33 @@
+@startuml
+start
+
+:Iniciar aplicación arcade;
+:Mostrar menú principal;
+
+partition Usuario {
+  :Seleccionar juego;
+}
+
+if (¿Juego seleccionado?) then (N Reinas)
+  :Pedir valor de N;
+  :Ejecutar resolución de N Reinas;
+  :Mostrar resultado visual;
+elseif (Recorrido del caballo)
+  :Pedir tamaño de tablero y posición inicial;
+  :Ejecutar algoritmo del caballo;
+  :Mostrar recorrido;
+elseif (Torres de Hanói)
+  :Pedir número de discos;
+  :Ejecutar algoritmo de Hanoi;
+  :Mostrar movimientos;
+endif
+
+:Mostrar mensaje de fin de juego;
+:Guardar resultado en BD (Hibernate + H2);
+
+partition Usuario {
+  :Volver al menú principal o salir;
+}
+
+stop
+@enduml

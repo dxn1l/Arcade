@@ -1,0 +1,37 @@
+@startuml
+object MenuPrincipal {
+  estado = "Esperando selección"
+}
+
+object JuegoFactory {
+  tipo = "AbstractFactory"
+}
+
+object JuegoNReinas {
+  N = 8
+  solucionEncontrada = true
+}
+
+object Tablero {
+  tamaño = "8x8"
+  reinas = "Colocadas correctamente"
+}
+
+object ControladorNReinas {
+  coordina = "Entrada, lógica y salida"
+}
+
+object Persistencia {
+  motor = "Hibernate"
+  baseDatos = "H2 embebida"
+}
+
+MenuPrincipal --> JuegoFactory : solicitaJuego("NReinas")
+JuegoFactory --> JuegoNReinas : crea instancia
+JuegoNReinas --> Tablero : usa
+MenuPrincipal --> ControladorNReinas : pasa control
+ControladorNReinas --> JuegoNReinas : llama resolver(N)
+JuegoNReinas --> Tablero : actualiza estado
+ControladorNReinas --> Persistencia : guarda resultado
+
+@enduml
