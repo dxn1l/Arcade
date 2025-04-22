@@ -11,8 +11,10 @@ public class PanelNReinas extends JPanel {
     private static final int N = 8;
     private final JButton[][] celdas = new JButton[N][N];
     private final int[][] tablero = new int[N][N];
+
     private final JPanel panelTablero;
     private final JLabel mensajeLabel;
+    private final JLabel contadorLabel;
 
     public PanelNReinas() {
         setLayout(new BorderLayout());
@@ -21,15 +23,29 @@ public class PanelNReinas extends JPanel {
         panelTablero.setPreferredSize(new Dimension(500, 500));
         panelTablero.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
         inicializarTablero();
+        add(panelTablero, BorderLayout.CENTER);
 
         mensajeLabel = new JLabel("Haz clic para colocar o quitar reinas", SwingConstants.CENTER);
+        mensajeLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
+        mensajeLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        add(mensajeLabel, BorderLayout.NORTH);
+
+        JPanel panelInferior = new JPanel(new FlowLayout());
 
         JButton validarBtn = new JButton("Validar solución");
         validarBtn.addActionListener(e -> validar());
 
-        add(mensajeLabel, BorderLayout.NORTH);
-        add(panelTablero, BorderLayout.CENTER);
-        add(validarBtn, BorderLayout.SOUTH);
+        JButton reiniciarBtn = new JButton("Reiniciar tablero");
+        reiniciarBtn.addActionListener(e -> reiniciarTablero());
+
+        contadorLabel = new JLabel("Reinas colocadas: 0");
+
+        panelInferior.add(validarBtn);
+        panelInferior.add(reiniciarBtn);
+        panelInferior.add(contadorLabel);
+
+        add(panelInferior, BorderLayout.SOUTH);
+
     }
 
     private void inicializarTablero() {
@@ -55,6 +71,17 @@ public class PanelNReinas extends JPanel {
             tablero[fila][col] = 0;
             celdas[fila][col].setText("");
         }
+        actualizarContador();
+    }
+
+    private void actualizarContador() {
+        int contador = 0;
+        for (int[] fila : tablero) {
+            for (int val : fila) {
+                if (val == 1) contador++;
+            }
+        }
+        contadorLabel.setText("Reinas colocadas: " + contador);
     }
 
     private void validar() {
@@ -64,6 +91,17 @@ public class PanelNReinas extends JPanel {
         ResultadoNReinas resultado = new ResultadoNReinas(N, valido);
         Partida partida = resultado.toPartida();
         partida.guardar();
+    }
+
+    private void reiniciarTablero() {
+        for (int fila = 0; fila < N; fila++) {
+            for (int col = 0; col < N; col++) {
+                tablero[fila][col] = 0;
+                celdas[fila][col].setText("");
+            }
+        }
+        mensajeLabel.setText("Haz clic para colocar o quitar reinas");
+        actualizarContador();
     }
 
     private boolean esValido() {
