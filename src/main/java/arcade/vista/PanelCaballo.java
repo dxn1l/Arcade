@@ -39,6 +39,11 @@ public class PanelCaballo extends JPanel {
         add(panelTablero, BorderLayout.CENTER);
 
         JPanel panelInferior = new JPanel(new FlowLayout());
+
+        JButton btnReiniciar = new JButton("Reiniciar recorrido");
+        btnReiniciar.addActionListener(e -> reiniciarRecorrido());
+        panelInferior.add(btnReiniciar);
+
         contadorLabel = new JLabel("Movimientos: 0");
         panelInferior.add(contadorLabel);
         add(panelInferior, BorderLayout.SOUTH);
@@ -117,6 +122,30 @@ public class PanelCaballo extends JPanel {
             }
         }
     }
+
+    private void reiniciarRecorrido() {
+
+        String tipo = "RecorridoCaballo-" + N;
+        String resumen = "Juego reiniciado por el usuario. " + movimientos + " movimientos registrados.";
+        Partida reinicio = new Partida(tipo, resumen, java.time.LocalDateTime.now());
+        reinicio.guardar();
+
+        for (int fila = 0; fila < N; fila++) {
+            for (int col = 0; col < N; col++) {
+                celdas[fila][col].setText("");
+                celdas[fila][col].setEnabled(true);
+                visitadas[fila][col] = false;
+            }
+        }
+
+        filaActual = -1;
+        colActual = -1;
+        movimientos = 0;
+        contadorLabel.setText("Movimientos: 0");
+        mensajeLabel.setText("Selecciona una casilla para comenzar");
+
+    }
+
 
     private List<int[]> obtenerMovimientosValidos(int f, int c) {
         int[][] movs = {

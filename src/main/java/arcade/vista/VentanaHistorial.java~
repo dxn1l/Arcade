@@ -56,7 +56,7 @@ public class VentanaHistorial extends JFrame {
         JButton btnActualizar = new JButton("Actualizar");
         JButton btnEliminar = new JButton("Eliminar todo");
         btnEliminarSeccion = new JButton("Eliminar sección");
-        
+
 
         botones.add(btnActualizar);
         botones.add(btnEliminar);
@@ -140,7 +140,20 @@ public class VentanaHistorial extends JFrame {
         StringBuilder sb = new StringBuilder("<html><body style='font-family:monospace;'>");
 
         for (Partida p : partidas) {
-            sb.append(p.toString()).append("<br>");
+            String tipo = p.getTipoJuego();
+            String color = "black";
+
+            if (tipo.startsWith("NReinas-4") || tipo.startsWith("RecorridoCaballo-5")) {
+                color = "green";
+            } else if (tipo.startsWith("NReinas-6") || tipo.startsWith("RecorridoCaballo-6")) {
+                color = "orange";
+            } else if (tipo.startsWith("NReinas-8") || tipo.startsWith("RecorridoCaballo-8")) {
+                color = "red";
+            }
+
+            sb.append("<span style='color:").append(color).append(";'>")
+                    .append(p.toString())
+                    .append("</span><br>");
         }
 
         if (partidas.isEmpty()) {
