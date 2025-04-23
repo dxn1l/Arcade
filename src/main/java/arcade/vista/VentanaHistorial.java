@@ -3,6 +3,8 @@ package arcade.vista;
 import arcade.persistencia.Partida;
 
 import javax.swing.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeSelectionModel;
 import java.awt.*;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -10,40 +12,59 @@ import java.util.stream.Collectors;
 public class VentanaHistorial extends JFrame {
 
     private final JEditorPane areaTexto;
-    private final JComboBox<String> filtroCombo;
+    private final JTree arbolFiltros;
+    private final JLabel contadorLabel;
+
 
     public VentanaHistorial() {
         setTitle("Historial de Partidas");
-        setSize(600, 450);
+        setSize(700, 450);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
-        String[] tipos = {"Todos", "NReinas", "RecorridoCaballo", "TorresHanoi"};
-        filtroCombo = new JComboBox<>(tipos);
+        DefaultMutableTreeNode raiz = new DefaultMutableTreeNode("Todos");
 
-        JButton btnActualizar = new JButton("Actualizar");
-        JButton btnEliminar = new JButton("Eliminar todo");
+        DefaultMutableTreeNode nodoNReinas = new DefaultMutableTreeNode("NReinas");
+        nodoNReinas.add(new DefaultMutableTreeNode("NReinas-4"));
+        nodoNReinas.add(new DefaultMutableTreeNode("NReinas-6"));
+        nodoNReinas.add(new DefaultMutableTreeNode("NReinas-8"));
 
-        JPanel panelTop = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        panelTop.add(new JLabel("Filtrar por juego:"));
-        panelTop.add(filtroCombo);
-        panelTop.add(btnActualizar);
-        panelTop.add(btnEliminar);
-        add(panelTop, BorderLayout.NORTH);
+        raiz.add(nodoNReinas);
+        raiz.add(new DefaultMutableTreeNode("RecorridoCaballo"));
+        raiz.add(new DefaultMutableTreeNode("TorresHanoi"));
+
+        arbolFiltros = new JTree(raiz);
+        arbolFiltros.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+        JScrollPane scrollArbol = new JScrollPane(arbolFiltros);
+        scrollArbol.setPreferredSize(new Dimension(180, 0));
+        add(scrollArbol, BorderLayout.WEST);
+
+        JPanel panelDerecho = new JPanel(new BorderLayout());
+
 
         areaTexto = new JEditorPane();
         areaTexto.setContentType("text/html");
         areaTexto.setEditable(false);
         areaTexto.setFont(new Font("Monospaced", Font.PLAIN, 12));
-        add(new JScrollPane(areaTexto), BorderLayout.CENTER);
+        panelDerecho.add(new JScrollPane(areaTexto), BorderLayout.CENTER);
 
-        cargarHistorial("Todos");
 
-        btnActualizar.addActionListener(e -> {
-            String filtro = (String) filtroCombo.getSelectedItem();
-            cargarHistorial(filtro);
-        });
+        JPanel panelInferior = new JPanel(new BorderLayout());
 
+        JPanel botones = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JButton btnActualizar = new JButton("Actualizar");
+        JButton btnEliminar = new JButton("Eliminar todo");
+        JButton btnEliminarSeccion = new JButton("Eliminar sección");
+
+        botones.add(btnActualizar);
+        botones.add(btnEliminar);
+        botones.add(btnEliminarSeccion);
+
+        contadorLabel = new JLabel("Mostrando 0 partidas");
+        contadorLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+        panelInferior.add(botones, BorderLayout.WEST);
+        panelInferior.add(contadorLabel, BorderLayout.EAST);
+        
         btnEliminar.addActionListener(e -> {
             int confirm = JOptionPane.showConfirmDialog(
                     this,
@@ -56,6 +77,52 @@ public class VentanaHistorial extends JFrame {
                 cargarHistorial("Todos");
             }
         });
+
+        btnEliminarSeccion.addActionListener(e -> {
+            Object selectedNode = arbolFiltros.getLastSelectedPathComponent();
+            if (selectedNode != null) {
+                String filtro = selectedNode.toString();
+                if (filtro.equals("Todos")) {
+                    JOptionPane.showMessageDialog(this,
+                            "No se puede eliminar la sección 'Todos'.",
+                            "Operación inválida",
+                            JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+
+                int confirm = JOptionPane.showConfirmDialog(
+                        this,
+                        "¿Seguro que deseas eliminar todas las partidas de '" + filtro + "'?",
+                        "Confirmación",
+                        JOptionPane.YES_NO_OPTION
+                );
+
+                if (confirm == JOptionPane.YES_OPTION) {
+                    Partida.eliminarPorTipo(filtro);
+                    cargarHistorial(filtro);
+                }
+            }
+        });
+
+
+        btnActualizar.addActionListener(e -> {
+            Object selectedNode = arbolFiltros.getLastSelectedPathComponent();
+            String filtro = selectedNode != null ? selectedNode.toString() : "Todos";
+            cargarHistorial(filtro);
+        });
+        panelDerecho.add(panelInferior, BorderLayout.SOUTH);
+
+        add(panelDerecho, BorderLayout.CENTER);
+
+        arbolFiltros.addTreeSelectionListener(e -> {
+            Object selectedNode = arbolFiltros.getLastSelectedPathComponent();
+            if (selectedNode != null) {
+                String seleccion = selectedNode.toString();
+                cargarHistorial(seleccion);
+            }
+        });
+
+        cargarHistorial("Todos");
     }
 
     private void cargarHistorial(String tipoFiltro) {
@@ -79,5 +146,8 @@ public class VentanaHistorial extends JFrame {
 
         sb.append("</body></html>");
         areaTexto.setText(sb.toString());
+
+        String textoContador = "Mostrando " + partidas.size() + " partida" + (partidas.size() != 1 ? "s" : "");
+        contadorLabel.setText(textoContador);
     }
 }

@@ -59,6 +59,16 @@ public class Partida {
         session.close();
     }
 
+    public static void eliminarPorTipo(String tipo) {
+        var session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+        session.createQuery("delete from Partida where tipoJuego like :tipo")
+                .setParameter("tipo", tipo + "%")
+                .executeUpdate();
+        session.getTransaction().commit();
+        session.close();
+    }
+
     @Override
     public String toString() {
         return "[" + fecha + "] <font color='" + getColorHTML() + "'>" + tipoJuego + "</font> - " + resumen;
