@@ -17,13 +17,48 @@ public class MenuPrincipal extends JFrame {
 
         JMenu menuJuegos = new JMenu("Juegos");
         JMenuItem itemNReinas = new JMenuItem("N Reinas");
-        itemNReinas.addActionListener(e -> mostrarPanel(new PanelNReinas()));
+        itemNReinas.addActionListener(e -> {
+            String[] opciones = {"4x4", "6x6", "8x8"};
+            String seleccion = (String) JOptionPane.showInputDialog(
+                    this,
+                    "Selecciona el tamaño del tablero:",
+                    "Tamaño del tablero",
+                    JOptionPane.QUESTION_MESSAGE,
+                    null,
+                    opciones,
+                    "8x8"
+            );
 
-        // Aquí después podés añadir:
-        // JMenuItem itemCaballo = new JMenuItem("Recorrido del Caballo");
+            if (seleccion != null) {
+                int n = Integer.parseInt(seleccion.substring(0, 1));
+                mostrarPanel(new PanelNReinas(n));
+            }
+        });
+
+        JMenuItem itemCaballo = new JMenuItem("Recorrido del Caballo");
+        itemCaballo.addActionListener(e -> {
+            String[] opciones = {"5x5", "6x6", "8x8"};
+            String seleccion = (String) JOptionPane.showInputDialog(
+                    this,
+                    "Selecciona el tamaño del tablero:",
+                    "Tamaño del tablero",
+                    JOptionPane.QUESTION_MESSAGE,
+                    null,
+                    opciones,
+                    "8x8"
+            );
+
+            if (seleccion != null) {
+                int n = Integer.parseInt(seleccion.substring(0, 1)); // toma el número inicial
+                mostrarPanel(new PanelCaballo(n));
+            }
+        });
+
+
         // JMenuItem itemHanoi = new JMenuItem("Torres de Hanoi");
 
         menuJuegos.add(itemNReinas);
+        menuJuegos.add(itemCaballo);
         menuBar.add(menuJuegos);
 
         JMenu menuOpciones = new JMenu("Opciones");

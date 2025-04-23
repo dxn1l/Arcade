@@ -14,6 +14,7 @@ public class VentanaHistorial extends JFrame {
     private final JEditorPane areaTexto;
     private final JTree arbolFiltros;
     private final JLabel contadorLabel;
+    private final JButton btnEliminarSeccion;
 
 
     public VentanaHistorial() {
@@ -54,7 +55,8 @@ public class VentanaHistorial extends JFrame {
         JPanel botones = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JButton btnActualizar = new JButton("Actualizar");
         JButton btnEliminar = new JButton("Eliminar todo");
-        JButton btnEliminarSeccion = new JButton("Eliminar sección");
+        btnEliminarSeccion = new JButton("Eliminar sección");
+
 
         botones.add(btnActualizar);
         botones.add(btnEliminar);
@@ -119,6 +121,7 @@ public class VentanaHistorial extends JFrame {
             if (selectedNode != null) {
                 String seleccion = selectedNode.toString();
                 cargarHistorial(seleccion);
+                btnEliminarSeccion.setEnabled(!seleccion.equals("Todos"));
             }
         });
 

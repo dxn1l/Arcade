@@ -14,6 +14,7 @@ public class VentanaHistorial extends JFrame {
     private final JEditorPane areaTexto;
     private final JTree arbolFiltros;
     private final JLabel contadorLabel;
+    private final JButton btnEliminarSeccion;
 
 
     public VentanaHistorial() {
@@ -54,7 +55,8 @@ public class VentanaHistorial extends JFrame {
         JPanel botones = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JButton btnActualizar = new JButton("Actualizar");
         JButton btnEliminar = new JButton("Eliminar todo");
-        JButton btnEliminarSeccion = new JButton("Eliminar sección");
+        btnEliminarSeccion = new JButton("Eliminar sección");
+        
 
         botones.add(btnActualizar);
         botones.add(btnEliminar);
@@ -78,6 +80,33 @@ public class VentanaHistorial extends JFrame {
             }
         });
 
+        btnEliminarSeccion.addActionListener(e -> {
+            Object selectedNode = arbolFiltros.getLastSelectedPathComponent();
+            if (selectedNode != null) {
+                String filtro = selectedNode.toString();
+                if (filtro.equals("Todos")) {
+                    JOptionPane.showMessageDialog(this,
+                            "No se puede eliminar la sección 'Todos'.",
+                            "Operación inválida",
+                            JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+
+                int confirm = JOptionPane.showConfirmDialog(
+                        this,
+                        "¿Seguro que deseas eliminar todas las partidas de '" + filtro + "'?",
+                        "Confirmación",
+                        JOptionPane.YES_NO_OPTION
+                );
+
+                if (confirm == JOptionPane.YES_OPTION) {
+                    Partida.eliminarPorTipo(filtro);
+                    cargarHistorial(filtro);
+                }
+            }
+        });
+
+
         btnActualizar.addActionListener(e -> {
             Object selectedNode = arbolFiltros.getLastSelectedPathComponent();
             String filtro = selectedNode != null ? selectedNode.toString() : "Todos";
@@ -92,6 +121,7 @@ public class VentanaHistorial extends JFrame {
             if (selectedNode != null) {
                 String seleccion = selectedNode.toString();
                 cargarHistorial(seleccion);
+                btnEliminarSeccion.setEnabled(!seleccion.equals("Todos"));
             }
         });
 

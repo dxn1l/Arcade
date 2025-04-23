@@ -1,4 +1,9 @@
 package arcade.interfaz;
 
-public class Juego {
+import arcade.persistencia.Partida;
+
+public interface Juego {
+    void iniciar();
+    void resolver();
+    Partida obtenerResultado();
 }
