@@ -1,5 +1,7 @@
 package arcade.vista;
 
+import arcade.juegos.caballo.ControladorCaballo;
+import arcade.juegos.caballo.ResultadoCaballo;
 import arcade.persistencia.Partida;
 
 import javax.swing.*;
@@ -19,6 +21,8 @@ public class PanelCaballo extends JPanel {
 
     private int filaActual = -1, colActual = -1;
     private int movimientos = 0;
+
+
 
     public PanelCaballo(int N) {
         this.N = N;
@@ -44,6 +48,10 @@ public class PanelCaballo extends JPanel {
         btnReiniciar.addActionListener(e -> reiniciarRecorrido());
         panelInferior.add(btnReiniciar);
 
+        JButton btnResolverAuto = new JButton("Resolver automáticamente");
+        btnResolverAuto.addActionListener(e -> resolverAutomaticamente());
+        panelInferior.add(btnResolverAuto);
+
         contadorLabel = new JLabel("Movimientos: 0");
         panelInferior.add(contadorLabel);
         add(panelInferior, BorderLayout.SOUTH);
@@ -66,7 +74,7 @@ public class PanelCaballo extends JPanel {
 
     private void manejarClick(int fila, int col) {
         if (filaActual == -1 && colActual == -1) {
-            // Primer movimiento (inicio del recorrido)
+
             colocarCaballo(fila, col);
             mensajeLabel.setText("Selecciona el siguiente movimiento válido.");
         } else {
@@ -92,16 +100,18 @@ public class PanelCaballo extends JPanel {
 
     private void colocarCaballo(int fila, int col) {
         if (filaActual != -1 && colActual != -1) {
-            celdas[filaActual][colActual].setText("" + movimientos);
+            celdas[filaActual][colActual].setText(String.valueOf(movimientos));
+            celdas[filaActual][colActual].setForeground(Color.BLACK);
         }
 
         filaActual = fila;
         colActual = col;
         movimientos++;
-        contadorLabel.setText("Movimientos: " + movimientos);
         visitadas[fila][col] = true;
         celdas[fila][col].setText("♞");
-        celdas[fila][col].setForeground(Color.BLUE);
+        celdas[fila][col].setForeground(Color.BLACK);
+
+        contadorLabel.setText("Movimientos: " + movimientos);
 
         actualizarDisponibles();
     }
@@ -133,7 +143,7 @@ public class PanelCaballo extends JPanel {
         for (int fila = 0; fila < N; fila++) {
             for (int col = 0; col < N; col++) {
                 celdas[fila][col].setText("");
-                celdas[fila][col].setEnabled(true);
+                celdas[fila][col].setForeground(Color.BLACK);
                 visitadas[fila][col] = false;
             }
         }
@@ -144,6 +154,35 @@ public class PanelCaballo extends JPanel {
         contadorLabel.setText("Movimientos: 0");
         mensajeLabel.setText("Selecciona una casilla para comenzar");
 
+    }
+
+    private void resolverAutomaticamente() {
+        limpiarTablero();
+
+        ControladorCaballo controlador = new ControladorCaballo(N);
+        ResultadoCaballo resultado = controlador.resolver();
+
+        List<int[]> recorrido = resultado.getRecorrido();
+
+        for (int i = 0; i < recorrido.size(); i++) {
+            int[] paso = recorrido.get(i);
+            int fila = paso[0];
+            int col = paso[1];
+            String texto = (i == recorrido.size() - 1) ? "♞" : String.valueOf(i + 1);
+            celdas[fila][col].setText(texto);
+            celdas[fila][col].setForeground(Color.GREEN);
+            visitadas[fila][col] = true;
+            celdas[fila][col].setEnabled(false);
+        }
+
+        filaActual = recorrido.get(recorrido.size() - 1)[0];
+        colActual = recorrido.get(recorrido.size() - 1)[1];
+        movimientos = recorrido.size();
+        contadorLabel.setText("Movimientos: " + movimientos);
+
+        mensajeLabel.setText(resultado.esCompleto()
+                ? "¡Recorrido completo automáticamente!"
+                : "Recorrido automático incompleto.");
     }
 
 
@@ -161,6 +200,22 @@ public class PanelCaballo extends JPanel {
             }
         }
         return validos;
+    }
+
+    private void limpiarTablero() {
+        for (int fila = 0; fila < N; fila++) {
+            for (int col = 0; col < N; col++) {
+                celdas[fila][col].setText("");
+                celdas[fila][col].setForeground(Color.BLACK);
+                visitadas[fila][col] = false;
+                celdas[fila][col].setEnabled(true);
+            }
+        }
+        filaActual = -1;
+        colActual = -1;
+        movimientos = 0;
+        contadorLabel.setText("Movimientos: 0");
+        mensajeLabel.setText("Selecciona una casilla para comenzar");
     }
 
     private boolean esMovimientoValido(int fila, int col) {

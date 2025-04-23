@@ -1,0 +1,34 @@
+package arcade.juegos.caballo;
+
+import arcade.persistencia.Partida;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+public class ResultadoCaballo {
+
+    private final int N;
+    private final boolean exito;
+    private final List<int[]> recorrido;
+
+    public ResultadoCaballo(int N, boolean exito, List<int[]> recorrido) {
+        this.N = N;
+        this.exito = exito;
+        this.recorrido = recorrido;
+    }
+
+    public boolean esExitoso() {
+        return exito;
+    }
+
+    public List<int[]> getRecorrido() {
+        return recorrido;
+    }
+
+    public Partida toPartida() {
+        String resumen = exito
+                ? "Recorrido completo con " + recorrido.size() + " casillas."
+                : "Recorrido incompleto. Se visitaron " + recorrido.size() + " casillas.";
+        return new Partida("RecorridoCaballo-" + N, resumen, LocalDateTime.now());
+    }
+}

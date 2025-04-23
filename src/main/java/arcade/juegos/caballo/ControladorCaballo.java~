@@ -1,0 +1,73 @@
+package arcade.juegos.caballo;
+
+import arcade.persistencia.Partida;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+public class ControladorCaballo {
+
+    private final int N;
+    private boolean[][] visitadas;
+    private List<int[]> recorrido;
+    private boolean completo;
+
+    public ControladorCaballo(int N) {
+        this.N = N;
+        this.visitadas = new boolean[N][N];
+        this.recorrido = new ArrayList<>();
+        this.completo = false;
+    }
+
+    public ResultadoCaballo resolver() {
+        Random rand = new Random();
+        int fila = rand.nextInt(N);
+        int col = rand.nextInt(N);
+
+        recorrido.clear();
+        visitadas = new boolean[N][N];
+
+        realizarRecorrido(fila, col);
+
+        ResultadoCaballo resultado = new ResultadoCaballo(N, recorrido, completo);
+        Partida partida = resultado.toPartida();
+        partida.guardar();
+        return resultado;
+    }
+
+    private void realizarRecorrido(int fila, int col) {
+        recorrido.add(new int[]{fila, col});
+        visitadas[fila][col] = true;
+
+        while (true) {
+            List<int[]> movimientosValidos = obtenerMovimientosValidos(fila, col);
+            if (movimientosValidos.isEmpty()) break;
+
+            int[] siguiente = movimientosValidos.get(new Random().nextInt(movimientosValidos.size()));
+            fila = siguiente[0];
+            col = siguiente[1];
+            recorrido.add(new int[]{fila, col});
+            visitadas[fila][col] = true;
+        }
+
+        completo = recorrido.size() == N * N;
+    }
+
+    private List<int[]> obtenerMovimientosValidos(int f, int c) {
+        int[][] movs = {
+                {-2, -1}, {-2, 1}, {-1, -2}, {-1, 2},
+                {1, -2}, {1, 2}, {2, -1}, {2, 1}
+        };
+        List<int[]> validos = new ArrayList<>();
+        for (int[] m : movs) {
+            int nf = f + m[0];
+            int nc = c + m[1];
+            if (nf >= 0 && nf < N && nc >= 0 && nc < N && !visitadas[nf][nc]) {
+                validos.add(new int[]{nf, nc});
+            }
+        }
+        return validos;
+    }
+}
