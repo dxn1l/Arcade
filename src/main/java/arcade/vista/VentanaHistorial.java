@@ -29,9 +29,14 @@ public class VentanaHistorial extends JFrame {
         nodoNReinas.add(new DefaultMutableTreeNode("NReinas-4"));
         nodoNReinas.add(new DefaultMutableTreeNode("NReinas-6"));
         nodoNReinas.add(new DefaultMutableTreeNode("NReinas-8"));
-
         raiz.add(nodoNReinas);
-        raiz.add(new DefaultMutableTreeNode("RecorridoCaballo"));
+
+        DefaultMutableTreeNode nodoCaballo = new DefaultMutableTreeNode("RecorridoCaballo");
+        nodoCaballo.add(new DefaultMutableTreeNode("RecorridoCaballo-5"));
+        nodoCaballo.add(new DefaultMutableTreeNode("RecorridoCaballo-6"));
+        nodoCaballo.add(new DefaultMutableTreeNode("RecorridoCaballo-8"));
+        raiz.add(nodoCaballo);
+
         raiz.add(new DefaultMutableTreeNode("TorresHanoi"));
 
         arbolFiltros = new JTree(raiz);

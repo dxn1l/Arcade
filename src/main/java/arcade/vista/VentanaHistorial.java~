@@ -29,9 +29,14 @@ public class VentanaHistorial extends JFrame {
         nodoNReinas.add(new DefaultMutableTreeNode("NReinas-4"));
         nodoNReinas.add(new DefaultMutableTreeNode("NReinas-6"));
         nodoNReinas.add(new DefaultMutableTreeNode("NReinas-8"));
-
         raiz.add(nodoNReinas);
-        raiz.add(new DefaultMutableTreeNode("RecorridoCaballo"));
+        
+        DefaultMutableTreeNode nodoCaballo = new DefaultMutableTreeNode("RecorridoCaballo");
+        nodoCaballo.add(new DefaultMutableTreeNode("RecorridoCaballo-5"));
+        nodoCaballo.add(new DefaultMutableTreeNode("RecorridoCaballo-6"));
+        nodoCaballo.add(new DefaultMutableTreeNode("RecorridoCaballo-8"));
+        raiz.add(nodoCaballo);
+
         raiz.add(new DefaultMutableTreeNode("TorresHanoi"));
 
         arbolFiltros = new JTree(raiz);
@@ -140,20 +145,7 @@ public class VentanaHistorial extends JFrame {
         StringBuilder sb = new StringBuilder("<html><body style='font-family:monospace;'>");
 
         for (Partida p : partidas) {
-            String tipo = p.getTipoJuego();
-            String color = "black";
-
-            if (tipo.startsWith("NReinas-4") || tipo.startsWith("RecorridoCaballo-5")) {
-                color = "green";
-            } else if (tipo.startsWith("NReinas-6") || tipo.startsWith("RecorridoCaballo-6")) {
-                color = "orange";
-            } else if (tipo.startsWith("NReinas-8") || tipo.startsWith("RecorridoCaballo-8")) {
-                color = "red";
-            }
-
-            sb.append("<span style='color:").append(color).append(";'>")
-                    .append(p.toString())
-                    .append("</span><br>");
+            sb.append(p.toString()).append("<br>");
         }
 
         if (partidas.isEmpty()) {
