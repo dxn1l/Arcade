@@ -20,11 +20,16 @@ public class CaballoJuego {
 
     public void resolver() {
         Random rand = new Random();
-        int fila = rand.nextInt(N);
-        int col = rand.nextInt(N);
         recorrido.clear();
         limpiarVisitadas();
-        backtrack(fila, col, 1);
+        completo = false;
+        for (int intento = 0; intento < 100 && !completo; intento++) {
+            int fila = rand.nextInt(N);
+            int col = rand.nextInt(N);
+            recorrido.clear();
+            limpiarVisitadas();
+            backtrack(fila, col, 1);
+        }
     }
 
     private boolean backtrack(int fila, int col, int paso) {

@@ -14,8 +14,7 @@ public class ControladorCaballo {
     public ResultadoCaballo resolver() {
         juego.resolver();
         ResultadoCaballo resultado = juego.obtenerResultado();
-        Partida partida = resultado.toPartida();
-        partida.guardar();
+        resultado.toPartida().guardar();
         return resultado;
     }
 }

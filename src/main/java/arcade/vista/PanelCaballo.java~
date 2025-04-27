@@ -22,6 +22,10 @@ public class PanelCaballo extends JPanel {
     private int filaActual = -1, colActual = -1;
     private int movimientos = 0;
 
+    private boolean resolviendo = false;
+    private JButton btnReiniciar;
+    private JButton btnResolverAuto;
+
 
 
     public PanelCaballo(int N) {
@@ -44,11 +48,11 @@ public class PanelCaballo extends JPanel {
 
         JPanel panelInferior = new JPanel(new FlowLayout());
 
-        JButton btnReiniciar = new JButton("Reiniciar recorrido");
+        btnReiniciar = new JButton("Reiniciar recorrido");
         btnReiniciar.addActionListener(e -> reiniciarRecorrido());
         panelInferior.add(btnReiniciar);
 
-        JButton btnResolverAuto = new JButton("Resolver automáticamente");
+        btnResolverAuto = new JButton("Resolver automáticamente");
         btnResolverAuto.addActionListener(e -> resolverAutomaticamente());
         panelInferior.add(btnResolverAuto);
 
@@ -73,8 +77,10 @@ public class PanelCaballo extends JPanel {
     }
 
     private void manejarClick(int fila, int col) {
-        if (filaActual == -1 && colActual == -1) {
 
+        if (resolviendo) return;
+
+        if (filaActual == -1 && colActual == -1) {
             colocarCaballo(fila, col);
             mensajeLabel.setText("Selecciona el siguiente movimiento válido.");
         } else {
@@ -82,10 +88,12 @@ public class PanelCaballo extends JPanel {
                 colocarCaballo(fila, col);
                 if (movimientos == N * N) {
                     mensajeLabel.setText("¡Recorrido completo!");
+                    colorearCasillasFinal(true);
                     guardarPartida(true);
                     bloquearTablero();
                 } else if (obtenerMovimientosValidos(fila, col).isEmpty()) {
                     mensajeLabel.setText("¡No hay más movimientos posibles!");
+                    colorearCasillasFinal(false);
                     guardarPartida(false);
                     bloquearTablero();
                 }
@@ -140,49 +148,69 @@ public class PanelCaballo extends JPanel {
         Partida reinicio = new Partida(tipo, resumen, java.time.LocalDateTime.now());
         reinicio.guardar();
 
-        for (int fila = 0; fila < N; fila++) {
-            for (int col = 0; col < N; col++) {
-                celdas[fila][col].setText("");
-                celdas[fila][col].setForeground(Color.BLACK);
-                visitadas[fila][col] = false;
-            }
-        }
-
-        filaActual = -1;
-        colActual = -1;
-        movimientos = 0;
-        contadorLabel.setText("Movimientos: 0");
-        mensajeLabel.setText("Selecciona una casilla para comenzar");
+        limpiarTablero();
 
     }
 
+
+
     private void resolverAutomaticamente() {
-        limpiarTablero(); 
+        if (resolviendo) return;
+        resolviendo = true;
+        limpiarTablero();
+        bloquearTablero();
+        mensajeLabel.setText("Resolviendo automáticamente...");
+        btnReiniciar.setEnabled(false);
+        btnResolverAuto.setEnabled(false);
 
-        ControladorCaballo controlador = new ControladorCaballo(N);
-        ResultadoCaballo resultado = controlador.resolver();
 
-        List<int[]> recorrido = resultado.getRecorrido();
+        new SwingWorker<Void, int[]>() {
+            private List<int[]> recorrido;
 
-        for (int i = 0; i < recorrido.size(); i++) {
-            int[] paso = recorrido.get(i);
-            int fila = paso[0];
-            int col = paso[1];
-            String texto = (i == recorrido.size() - 1) ? "♞" : String.valueOf(i + 1);
-            celdas[fila][col].setText(texto);
-            celdas[fila][col].setForeground(Color.GREEN);
-            visitadas[fila][col] = true;
-            celdas[fila][col].setEnabled(false);
-        }
+            @Override
+            protected Void doInBackground() throws Exception {
+                ControladorCaballo controlador = new ControladorCaballo(N);
+                ResultadoCaballo resultado = controlador.resolver();
+                recorrido = resultado.getRecorrido();
+                for (int i = 0; i < recorrido.size(); i++) {
+                    int[] actual = recorrido.get(i);
+                    Thread.sleep(300);
+                    publish(actual);
+                }
+                return null;
+            }
 
-        filaActual = recorrido.get(recorrido.size() - 1)[0];
-        colActual = recorrido.get(recorrido.size() - 1)[1];
-        movimientos = recorrido.size();
-        contadorLabel.setText("Movimientos: " + movimientos);
+            @Override
+            protected void process(List<int[]> chunks) {
+                int[] paso = chunks.get(chunks.size() - 1);
+                if (filaActual != -1 && colActual != -1) {
+                    celdas[filaActual][colActual].setText(String.valueOf(movimientos));
+                    celdas[filaActual][colActual].setForeground(Color.GREEN);
+                }
+                filaActual = paso[0];
+                colActual = paso[1];
+                celdas[filaActual][colActual].setText("♞");
+                celdas[filaActual][colActual].setForeground(Color.GREEN);
+                visitadas[filaActual][colActual] = true;
+                movimientos++;
+                contadorLabel.setText("Movimientos: " + movimientos);
+            }
 
-        mensajeLabel.setText(resultado.esCompleto()
-                ? "¡Recorrido completo automáticamente!"
-                : "Recorrido automático incompleto.");
+            @Override
+            protected void done() {
+                resolviendo = false;
+                btnReiniciar.setEnabled(true);
+                btnResolverAuto.setEnabled(true);
+                if (recorrido != null && recorrido.size() == N * N) {
+                    mensajeLabel.setText("¡Recorrido completo automáticamente!");
+                    colorearCasillasFinal(true);
+                } else {
+                    mensajeLabel.setText("No se encontró una solución automática.");
+                    JOptionPane.showMessageDialog(PanelCaballo.this, "No se pudo resolver el recorrido automáticamente.",
+                            "Sin solución", JOptionPane.WARNING_MESSAGE);
+                }
+            }
+        }.execute();
     }
 
 
@@ -207,8 +235,10 @@ public class PanelCaballo extends JPanel {
             for (int col = 0; col < N; col++) {
                 celdas[fila][col].setText("");
                 celdas[fila][col].setForeground(Color.BLACK);
+                celdas[fila][col].setBackground((fila + col) % 2 == 0 ? Color.WHITE : new Color(200, 200, 200));
                 visitadas[fila][col] = false;
                 celdas[fila][col].setEnabled(true);
+                resolviendo = false;
             }
         }
         filaActual = -1;
@@ -216,6 +246,7 @@ public class PanelCaballo extends JPanel {
         movimientos = 0;
         contadorLabel.setText("Movimientos: 0");
         mensajeLabel.setText("Selecciona una casilla para comenzar");
+
     }
 
     private boolean esMovimientoValido(int fila, int col) {
@@ -235,9 +266,45 @@ public class PanelCaballo extends JPanel {
     private void guardarPartida(boolean completado) {
         String resumen = completado
                 ? "Recorrido completo con " + movimientos + " movimientos."
-                : "Recorrido incompleto. " + movimientos + " movimientos realizados.";
+                : "Recorrido incompleto. Solo se visitaron " + movimientos + " casillas.";
         String tipo = "RecorridoCaballo-" + N;
         Partida partida = new Partida(tipo, resumen, LocalDateTime.now());
         partida.guardar();
+    }
+
+    private void colorearCasillasFinal(boolean exito) {
+        Color color = exito ? new Color(144, 238, 144) : new Color(255, 182, 193); // verde claro o rosa claro
+        for (int fila = 0; fila < N; fila++) {
+            for (int col = 0; col < N; col++) {
+                if (visitadas[fila][col]) {
+                    celdas[fila][col].setBackground(color);
+                }
+            }
+        }
+        if (movimientos > 0) {
+            int[] inicio = obtenerPrimeraCasillaVisitada();
+            int[] fin = new int[]{filaActual, colActual};
+            celdas[inicio[0]][inicio[1]].setBackground(Color.CYAN);
+            celdas[fin[0]][fin[1]].setBackground(Color.ORANGE);
+        }
+    }
+
+    private int[] obtenerPrimeraCasillaVisitada() {
+        for (int[] fila : obtenerRecorrido()) {
+            return fila;
+        }
+        return new int[]{0, 0};
+    }
+
+    private List<int[]> obtenerRecorrido() {
+        List<int[]> lista = new ArrayList<>();
+        for (int f = 0; f < N; f++) {
+            for (int c = 0; c < N; c++) {
+                if (!"".equals(celdas[f][c].getText())) {
+                    lista.add(new int[]{f, c});
+                }
+            }
+        }
+        return lista;
     }
 }
