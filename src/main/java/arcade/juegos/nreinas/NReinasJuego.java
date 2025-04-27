@@ -1,59 +1,75 @@
 package arcade.juegos.nreinas;
 
-import arcade.interfaz.Juego;
-import arcade.persistencia.Partida;
 
-public class NReinasJuego implements Juego {
+import java.util.ArrayList;
+import java.util.List;
+
+public class NReinasJuego  {
 
     private int N;
-    private int[][] tablero;
-    private boolean solucionEncontrada;
+    private final List<List<int[]>> soluciones = new ArrayList<>();
+    private int indiceSolucionActual = 0;
 
     public NReinasJuego(int N) {
         this.N = N;
-        this.tablero = new int[N][N];
+        resolverTodas();
     }
 
-    @Override
-    public void iniciar() {
-        solucionEncontrada = false;
+    private void resolverTodas() {
+        int[][] tablero = new int[N][N];
+        backtrack(tablero, 0);
     }
 
-    @Override
-    public void resolver() {
-        solucionEncontrada = resolverUtil(0);
-    }
-
-    private boolean resolverUtil(int fila) {
-        if (fila >= N) return true;
+    private void backtrack(int[][] tablero, int fila) {
+        if (fila == N) {
+            guardarSolucion(tablero);
+            return;
+        }
 
         for (int col = 0; col < N; col++) {
-            if (esSeguro(fila, col)) {
+            if (esSeguro(tablero, fila, col)) {
                 tablero[fila][col] = 1;
-                if (resolverUtil(fila + 1)) return true;
-                tablero[fila][col] = 0; // backtrack
+                backtrack(tablero, fila + 1);
+                tablero[fila][col] = 0;
             }
         }
-        return false;
     }
 
-    private boolean esSeguro(int fila, int col) {
-        for (int i = 0; i < fila; i++) if (tablero[i][col] == 1) return false;
-        for (int i = fila, j = col; i >= 0 && j >= 0; i--, j--) if (tablero[i][j] == 1) return false;
-        for (int i = fila, j = col; i >= 0 && j < N; i--, j++) if (tablero[i][j] == 1) return false;
+
+    private boolean esSeguro(int[][] tablero, int fila, int col) {
+        for (int i = 0; i < fila; i++) {
+            if (tablero[i][col] == 1) return false;
+        }
+        for (int i = fila - 1, j = col - 1; i >= 0 && j >= 0; i--, j--) {
+            if (tablero[i][j] == 1) return false;
+        }
+        for (int i = fila - 1, j = col + 1; i >= 0 && j < N; i--, j++) {
+            if (tablero[i][j] == 1) return false;
+        }
         return true;
     }
 
-    @Override
-    public Partida obtenerResultado() {
-        return new ResultadoNReinas(N, solucionEncontrada).toPartida();
+    private void guardarSolucion(int[][] tablero) {
+        List<int[]> solucion = new ArrayList<>();
+        for (int fila = 0; fila < N; fila++) {
+            for (int col = 0; col < N; col++) {
+                if (tablero[fila][col] == 1) {
+                    solucion.add(new int[]{fila, col});
+                }
+            }
+        }
+        soluciones.add(solucion);
     }
 
-    public int[][] getTablero() {
-        return tablero;
+    public boolean haySoluciones() {
+        return !soluciones.isEmpty();
     }
 
-    public boolean isSolucionEncontrada() {
-        return solucionEncontrada;
+    public List<int[]> siguienteSolucion() {
+        if (soluciones.isEmpty()) return null;
+        List<int[]> solucion = soluciones.get(indiceSolucionActual);
+        indiceSolucionActual = (indiceSolucionActual + 1) % soluciones.size(); // cicla
+        return solucion;
     }
+
 }

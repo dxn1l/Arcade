@@ -1,31 +1,24 @@
 package arcade.juegos.nreinas;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class ControladorNReinas {
 
-    private final NReinasJuego juego;
 
-    public ControladorNReinas(int N) {
-        this.juego = new NReinasJuego(N);
+    private static final Map<Integer, NReinasJuego> juegos = new HashMap<>();
+
+
+    public static ResultadoNReinas resolver(int N) {
+        NReinasJuego juego = juegos.computeIfAbsent(N, NReinasJuego::new);
+        if (!juego.haySoluciones()) {
+            return new ResultadoNReinas(N, false, null , false);
+        }
+        return new ResultadoNReinas(N, true, juego.siguienteSolucion() , true);
     }
 
-    public void iniciarJuego() {
-        juego.iniciar();
-    }
 
-    public void resolver() {
-        juego.resolver();
-    }
 
-    public int[][] obtenerTablero() {
-        return juego.getTablero();
-    }
 
-    public boolean solucionEncontrada() {
-        return juego.isSolucionEncontrada();
-    }
 
-    public void guardarResultado() {
-        var partida = juego.obtenerResultado();
-        partida.guardar();
-    }
 }

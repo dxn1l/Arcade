@@ -1,10 +1,13 @@
 package arcade.vista;
 
+import arcade.juegos.nreinas.ControladorNReinas;
 import arcade.juegos.nreinas.ResultadoNReinas;
 import arcade.persistencia.Partida;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PanelNReinas extends JPanel {
 
@@ -49,6 +52,10 @@ public class PanelNReinas extends JPanel {
 
         JButton reiniciarBtn = new JButton("Reiniciar tablero");
         reiniciarBtn.addActionListener(e -> reiniciarTablero());
+
+        JButton btnResolverAuto = new JButton("Resolver automáticamente");
+        btnResolverAuto.addActionListener(e -> resolverAutomaticamente());
+        panelInferior.add(btnResolverAuto);
 
 
         panelInferior.add(validarBtn);
@@ -134,7 +141,7 @@ public class PanelNReinas extends JPanel {
                     JOptionPane.WARNING_MESSAGE);
         }
 
-        ResultadoNReinas resultado = new ResultadoNReinas(N, valido);
+        ResultadoNReinas resultado = new ResultadoNReinas(N, valido , obtenerReinasDelTablero(), false);
         Partida partida = resultado.toPartida();
         partida.guardar();
     }
@@ -148,6 +155,32 @@ public class PanelNReinas extends JPanel {
         }
         mensajeLabel.setText("Haz clic para colocar o quitar reinas");
         actualizarContador();
+    }
+
+    private void resolverAutomaticamente() {
+        reiniciarTablero();
+
+        ResultadoNReinas resultado = ControladorNReinas.resolver(N);
+        if (resultado == null || !resultado.esExitosa()) {
+            JOptionPane.showMessageDialog(this,
+                    "No se encontró una solución automática para N = " + N,
+                    "Sin solución",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        for (int[] coord : resultado.getSolucion()) {
+            int fila = coord[0];
+            int col = coord[1];
+            tablero[fila][col] = 1;
+            celdas[fila][col].setText("Q");
+        }
+
+        actualizarContador();
+        mensajeLabel.setText("Solución automática colocada.");
+
+        Partida partida = resultado.toPartida();
+        partida.guardar();
     }
 
     private boolean esValido() {
@@ -169,6 +202,22 @@ public class PanelNReinas extends JPanel {
         }
         return true;
     }
+
+    private List<int[]> obtenerReinasDelTablero() {
+        List<int[]> coords = new ArrayList<int[]>();
+        for (int fila = 0; fila < N; fila++) {
+            for (int col = 0; col < N; col++) {
+                if ("Q".equals(celdas[fila][col].getText())) {
+                    coords.add(new int[]{fila, col});
+                }
+            }
+        }
+        return coords;
+    }
+
+
+
+
 
 
 }

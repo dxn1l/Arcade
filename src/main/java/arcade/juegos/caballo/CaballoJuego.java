@@ -1,0 +1,87 @@
+package arcade.juegos.caballo;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+public class CaballoJuego {
+
+    private final int N;
+    private final boolean[][] visitadas;
+    private final List<int[]> recorrido;
+    private boolean completo;
+
+    public CaballoJuego(int N) {
+        this.N = N;
+        this.visitadas = new boolean[N][N];
+        this.recorrido = new ArrayList<>();
+        this.completo = false;
+    }
+
+    public void resolver() {
+        Random rand = new Random();
+        recorrido.clear();
+        limpiarVisitadas();
+        completo = false;
+        for (int intento = 0; intento < 100 && !completo; intento++) {
+            int fila = rand.nextInt(N);
+            int col = rand.nextInt(N);
+            recorrido.clear();
+            limpiarVisitadas();
+            backtrack(fila, col, 1);
+        }
+    }
+
+    private boolean backtrack(int fila, int col, int paso) {
+        recorrido.add(new int[]{fila, col});
+        visitadas[fila][col] = true;
+
+        if (paso == N * N) {
+            completo = true;
+            return true;
+        }
+
+        for (int[] mov : obtenerMovimientosValidos(fila, col)) {
+            int nf = mov[0];
+            int nc = mov[1];
+            if (!visitadas[nf][nc]) {
+                if (backtrack(nf, nc, paso + 1)) return true;
+            }
+        }
+
+
+        recorrido.remove(recorrido.size() - 1);
+        visitadas[fila][col] = false;
+        return false;
+    }
+
+    private List<int[]> obtenerMovimientosValidos(int f, int c) {
+        int[][] movs = {
+                {-2, -1}, {-2, 1}, {-1, -2}, {-1, 2},
+                {1, -2}, {1, 2}, {2, -1}, {2, 1}
+        };
+        List<int[]> validos = new ArrayList<>();
+        for (int[] m : movs) {
+            int nf = f + m[0];
+            int nc = c + m[1];
+            if (nf >= 0 && nf < N && nc >= 0 && nc < N && !visitadas[nf][nc]) {
+                validos.add(new int[]{nf, nc});
+            }
+        }
+        return validos;
+    }
+
+    private void limpiarVisitadas() {
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
+                visitadas[i][j] = false;
+            }
+        }
+    }
+
+    public ResultadoCaballo obtenerResultado() {
+        return new ResultadoCaballo(N, new ArrayList<>(recorrido), completo);
+    }
+
+
+}
