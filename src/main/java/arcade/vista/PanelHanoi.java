@@ -14,6 +14,9 @@ public class PanelHanoi extends JPanel {
     private JPanel posteOrigen = null;
     private int movimientos = 0;
     private boolean resolviendo = false;
+    private final JButton btnReiniciar;
+    private final JButton btnLimpiar;
+    private final JButton btnResolver;
 
     public PanelHanoi(int cantidadDiscos) {
         this.cantidadDiscos = cantidadDiscos;
@@ -43,13 +46,20 @@ public class PanelHanoi extends JPanel {
 
         JPanel panelInferior = new JPanel(new FlowLayout());
 
-        JButton btnReiniciar = new JButton("Reiniciar partida");
+        btnReiniciar = new JButton("Reiniciar partida");
+        btnReiniciar.setEnabled(false);
         btnReiniciar.addActionListener(e -> reiniciar());
         panelInferior.add(btnReiniciar);
 
-        JButton btnResolver = new JButton("Resolver automáticamente");
+        btnLimpiar = new JButton("Limpiar tablero");
+        btnLimpiar.setEnabled(false);
+        btnLimpiar.addActionListener(e -> limpiarTablero());
+        panelInferior.add(btnLimpiar);
+
+        btnResolver = new JButton("Resolver automáticamente");
         btnResolver.addActionListener(e -> resolverAutomaticamente());
         panelInferior.add(btnResolver);
+
 
         contadorLabel = new JLabel("Movimientos: 0");
         panelInferior.add(contadorLabel);
@@ -123,6 +133,7 @@ public class PanelHanoi extends JPanel {
         } else {
             if (moverDisco(posteOrigen, postes[indice])) {
                 movimientos++;
+                btnReiniciar.setEnabled(true);
                 contadorLabel.setText("Movimientos: " + movimientos);
                 if (postes[2].getComponentCount() - 1 == cantidadDiscos) {
                     JOptionPane.showMessageDialog(this, "¡Felicidades! Has resuelto Hanoi en " + movimientos + " movimientos.");
@@ -186,6 +197,8 @@ public class PanelHanoi extends JPanel {
     }
 
     private void resolverAutomaticamente() {
+        btnReiniciar.setEnabled(false);
+        btnLimpiar.setEnabled(false);
         resolviendo = true;
         posteOrigen = null;
         inicializarDiscos(cantidadDiscos);
@@ -214,6 +227,8 @@ public class PanelHanoi extends JPanel {
 
             @Override
             protected void done() {
+                btnReiniciar.setEnabled(false);
+                btnLimpiar.setEnabled(true);
                 JOptionPane.showMessageDialog(PanelHanoi.this, "¡Resolución automática completada!");
                 guardarPartida(true);
                 bloquearPostes();
@@ -221,4 +236,42 @@ public class PanelHanoi extends JPanel {
             }
         }.execute();
     }
+
+    private void limpiarTablero() {
+        posteOrigen = null;
+        resolviendo = false;
+        movimientos = 0;
+        contadorLabel.setText("Movimientos: 0");
+
+        // Restaurar paneles y listeners
+        for (int i = 0; i < 3; i++) {
+            final int index = i;
+            postes[i].removeAll();
+            postes[i].setLayout(new BoxLayout(postes[i], BoxLayout.Y_AXIS));
+            postes[i].addMouseListener(new java.awt.event.MouseAdapter() {
+                @Override
+                public void mouseClicked(java.awt.event.MouseEvent e) {
+                    if (!resolviendo) manejarClickPoste(index);
+                }
+            });
+            postes[i].add(Box.createVerticalGlue());
+        }
+
+        // Colocar discos nuevamente en el primer poste
+        for (int i = cantidadDiscos; i >= 1; i--) {
+            JPanel disco = crearDisco(i);
+            postes[0].add(disco, postes[0].getComponentCount() - 1);
+        }
+
+        revalidate();
+        repaint();
+
+        // Actualizar botones
+        btnLimpiar.setEnabled(false);
+        btnReiniciar.setEnabled(false);
+        btnResolver.setEnabled(true);
+    }
+
+
+
 }

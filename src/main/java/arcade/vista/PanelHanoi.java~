@@ -14,6 +14,8 @@ public class PanelHanoi extends JPanel {
     private JPanel posteOrigen = null;
     private int movimientos = 0;
     private boolean resolviendo = false;
+    private final JButton btnReiniciar;
+    private final JButton btnLimpiar;
 
     public PanelHanoi(int cantidadDiscos) {
         this.cantidadDiscos = cantidadDiscos;
@@ -43,13 +45,20 @@ public class PanelHanoi extends JPanel {
 
         JPanel panelInferior = new JPanel(new FlowLayout());
 
-        JButton btnReiniciar = new JButton("Reiniciar partida");
+        btnReiniciar = new JButton("Reiniciar partida");
+        btnReiniciar.setEnabled(false);
         btnReiniciar.addActionListener(e -> reiniciar());
         panelInferior.add(btnReiniciar);
+
+        btnLimpiar = new JButton("Limpiar tablero");
+        btnLimpiar.setEnabled(false);
+        btnLimpiar.addActionListener(e -> limpiarTablero());
+        panelInferior.add(btnLimpiar);
 
         JButton btnResolver = new JButton("Resolver automáticamente");
         btnResolver.addActionListener(e -> resolverAutomaticamente());
         panelInferior.add(btnResolver);
+
 
         contadorLabel = new JLabel("Movimientos: 0");
         panelInferior.add(contadorLabel);
@@ -64,29 +73,33 @@ public class PanelHanoi extends JPanel {
         poste.setLayout(new BoxLayout(poste, BoxLayout.Y_AXIS));
         poste.setBackground(Color.LIGHT_GRAY);
         poste.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
-        poste.add(Box.createVerticalGlue()); // Pegamento que empuja hacia abajo
+        Component filler = new Box.Filler(
+                new Dimension(0, Short.MAX_VALUE),
+                new Dimension(0, Short.MAX_VALUE),
+                new Dimension(0, Short.MAX_VALUE)
+        );
+        poste.add(filler);
         return poste;
     }
 
-
     private void inicializarDiscos(int cantidad) {
-        for (int i = 0; i < 3; i++) {
-            postes[i].removeAll();
-            postes[i].setLayout(new BoxLayout(postes[i], BoxLayout.Y_AXIS));
-            postes[i].add(Box.createVerticalGlue()); // empuja los discos hacia abajo
-        }
-
+        postes[0].removeAll();
+        postes[0].setLayout(new BoxLayout(postes[0], BoxLayout.Y_AXIS));
         for (int i = cantidad; i >= 1; i--) {
             JPanel disco = crearDisco(i);
-            postes[0].add(disco, postes[0].getComponentCount() - 1); // antes del pegamento
+            postes[0].add(disco);
         }
-
+        postes[0].add(Box.createVerticalGlue());
+        for (int i = 1; i < 3; i++) {
+            postes[i].removeAll();
+            postes[i].setLayout(new BoxLayout(postes[i], BoxLayout.Y_AXIS));
+            postes[i].add(Box.createVerticalGlue());
+        }
         movimientos = 0;
         contadorLabel.setText("Movimientos: 0");
         revalidate();
         repaint();
     }
-
 
     private JPanel crearDisco(int tamaño) {
         JPanel disco = new JPanel();
@@ -110,7 +123,7 @@ public class PanelHanoi extends JPanel {
 
     private void manejarClickPoste(int indice) {
         if (posteOrigen == null) {
-            if (posteTieneDiscos(postes[indice])) {
+            if (postes[indice].getComponentCount() > 1) {
                 posteOrigen = postes[indice];
                 mensajeSeleccion("Origen seleccionado: Poste " + (indice + 1));
             } else {
@@ -119,6 +132,7 @@ public class PanelHanoi extends JPanel {
         } else {
             if (moverDisco(posteOrigen, postes[indice])) {
                 movimientos++;
+                btnReiniciar.setEnabled(true);
                 contadorLabel.setText("Movimientos: " + movimientos);
                 if (postes[2].getComponentCount() - 1 == cantidadDiscos) {
                     JOptionPane.showMessageDialog(this, "¡Felicidades! Has resuelto Hanoi en " + movimientos + " movimientos.");
@@ -133,10 +147,10 @@ public class PanelHanoi extends JPanel {
     private boolean moverDisco(JPanel origen, JPanel destino) {
         if (origen.getComponentCount() <= 1) return false;
 
-        JPanel discoOrigen = obtenerDiscoSuperior(origen);
+        JPanel discoOrigen = (JPanel) origen.getComponent(origen.getComponentCount() - 2);
 
         if (destino.getComponentCount() > 1) {
-            JPanel discoDestino = obtenerDiscoSuperior(destino);
+            JPanel discoDestino = (JPanel) destino.getComponent(destino.getComponentCount() - 2);
             if (discoDestino.getWidth() < discoOrigen.getWidth()) {
                 JOptionPane.showMessageDialog(this,
                         "No puedes colocar un disco grande sobre uno pequeño.",
@@ -147,14 +161,13 @@ public class PanelHanoi extends JPanel {
         }
 
         origen.remove(discoOrigen);
-        destino.add(discoOrigen, destino.getComponentCount() - 1); // antes del pegamento
+        destino.add(discoOrigen, destino.getComponentCount() - 1);
         origen.revalidate();
         origen.repaint();
         destino.revalidate();
         destino.repaint();
         return true;
     }
-
 
     private void mensajeSeleccion(String msg) {
         contadorLabel.setText(msg);
@@ -183,6 +196,8 @@ public class PanelHanoi extends JPanel {
     }
 
     private void resolverAutomaticamente() {
+        btnReiniciar.setEnabled(false);
+        btnLimpiar.setEnabled(false);
         resolviendo = true;
         posteOrigen = null;
         inicializarDiscos(cantidadDiscos);
@@ -211,6 +226,8 @@ public class PanelHanoi extends JPanel {
 
             @Override
             protected void done() {
+                btnReiniciar.setEnabled(false);
+                btnLimpiar.setEnabled(true);
                 JOptionPane.showMessageDialog(PanelHanoi.this, "¡Resolución automática completada!");
                 guardarPartida(true);
                 bloquearPostes();
@@ -219,25 +236,11 @@ public class PanelHanoi extends JPanel {
         }.execute();
     }
 
-    private JPanel obtenerDiscoSuperior(JPanel poste) {
-        for (int i = 0; i < poste.getComponentCount(); i++) {
-            Component comp = poste.getComponent(i);
-            if (comp instanceof JPanel) {
-                return (JPanel) comp;
-            }
-        }
-        return null;
-    }
-
-
-
-    private boolean posteTieneDiscos(JPanel poste) {
-        for (Component comp : poste.getComponents()) {
-            if (comp instanceof JPanel) {
-                return true;
-            }
-        }
-        return false;
+    private void limpiarTablero() {
+        posteOrigen = null;
+        inicializarDiscos(cantidadDiscos); 
+        btnLimpiar.setEnabled(false);
+        btnReiniciar.setEnabled(false);
     }
 
 
