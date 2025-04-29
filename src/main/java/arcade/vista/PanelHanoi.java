@@ -1,6 +1,7 @@
 package arcade.vista;
 
 import arcade.juegos.hanoi.ControladorHanoi;
+import arcade.juegos.hanoi.ResultadoHanoi;
 
 import javax.swing.*;
 import java.awt.*;
@@ -137,7 +138,9 @@ public class PanelHanoi extends JPanel {
                 contadorLabel.setText("Movimientos: " + movimientos);
                 if (postes[2].getComponentCount() - 1 == cantidadDiscos) {
                     JOptionPane.showMessageDialog(this, "¡Felicidades! Has resuelto Hanoi en " + movimientos + " movimientos.");
-                    guardarPartida(true);
+                    if (!resolviendo) {
+                        guardarPartida(true);  // Solo guardamos si fue una partida manual
+                    }
                     bloquearPostes();
                 }
             }
@@ -175,11 +178,8 @@ public class PanelHanoi extends JPanel {
     }
 
     private void guardarPartida(boolean completado) {
-        String resumen = completado
-                ? "Torres de Hanoi completado en " + movimientos + " movimientos."
-                : "Partida incompleta de Hanoi. " + movimientos + " movimientos.";
-        String tipo = "TorresHanoi-" + cantidadDiscos;
-        new arcade.persistencia.Partida(tipo, resumen, java.time.LocalDateTime.now()).guardar();
+        ResultadoHanoi resultado = new ResultadoHanoi(cantidadDiscos, movimientos, completado, false); // false = manual
+        resultado.toPartida().guardar();
     }
 
     private void bloquearPostes() {
@@ -230,7 +230,6 @@ public class PanelHanoi extends JPanel {
                 btnReiniciar.setEnabled(false);
                 btnLimpiar.setEnabled(true);
                 JOptionPane.showMessageDialog(PanelHanoi.this, "¡Resolución automática completada!");
-                guardarPartida(true);
                 bloquearPostes();
                 resolviendo = false;
             }
@@ -243,7 +242,6 @@ public class PanelHanoi extends JPanel {
         movimientos = 0;
         contadorLabel.setText("Movimientos: 0");
 
-        // Restaurar paneles y listeners
         for (int i = 0; i < 3; i++) {
             final int index = i;
             postes[i].removeAll();
@@ -257,7 +255,6 @@ public class PanelHanoi extends JPanel {
             postes[i].add(Box.createVerticalGlue());
         }
 
-        // Colocar discos nuevamente en el primer poste
         for (int i = cantidadDiscos; i >= 1; i--) {
             JPanel disco = crearDisco(i);
             postes[0].add(disco, postes[0].getComponentCount() - 1);
@@ -266,7 +263,6 @@ public class PanelHanoi extends JPanel {
         revalidate();
         repaint();
 
-        // Actualizar botones
         btnLimpiar.setEnabled(false);
         btnReiniciar.setEnabled(false);
         btnResolver.setEnabled(true);

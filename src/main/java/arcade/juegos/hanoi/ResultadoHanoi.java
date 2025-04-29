@@ -10,18 +10,22 @@ public class ResultadoHanoi {
     private final int cantidadDiscos;
     private final int cantidadMovimientos;
     private final boolean completado;
+    private final boolean esAutomatica;
 
-    public ResultadoHanoi(int cantidadDiscos, int cantidadMovimientos, boolean completado) {
+
+    public ResultadoHanoi(int cantidadDiscos, int cantidadMovimientos, boolean completado , boolean esAutomatica) {
         this.cantidadDiscos = cantidadDiscos;
         this.cantidadMovimientos = cantidadMovimientos;
         this.completado = completado;
+        this.esAutomatica = esAutomatica;
     }
 
     public Partida toPartida() {
         String tipo = "TorresHanoi-" + cantidadDiscos;
-        String resumen = completado ?
-                "Juego completado en " + cantidadMovimientos + " movimientos." :
-                "Juego incompleto. Se realizaron " + cantidadMovimientos + " movimientos.";
+        String origen = esAutomatica ? " (Automática)" : " (Manual)";
+        String resumen = completado
+                ? "Juego completado en " + cantidadMovimientos + " movimientos." + origen :
+                "Juego incompleto. Se realizaron " + cantidadMovimientos + " movimientos." + origen;
         return new Partida(tipo, resumen, LocalDateTime.now());
     }
 

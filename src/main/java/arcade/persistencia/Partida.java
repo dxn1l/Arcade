@@ -75,9 +75,9 @@ public class Partida {
     }
 
     public String getColorHTML() {
-        if (tipoJuego.equals("NReinas-4") || tipoJuego.equals("RecorridoCaballo-5")) return "green";
-        if (tipoJuego.equals("NReinas-6") || tipoJuego.equals("RecorridoCaballo-6")) return "orange";
-        if (tipoJuego.equals("NReinas-8") || tipoJuego.equals("RecorridoCaballo-8")) return "red";
+        if (tipoJuego.equals("NReinas-4") || tipoJuego.equals("RecorridoCaballo-5") || tipoJuego.equals("TorresHanoi-3")) return "green";
+        if (tipoJuego.equals("NReinas-6") || tipoJuego.equals("RecorridoCaballo-6") || tipoJuego.equals("TorresHanoi-4")) return "orange";
+        if (tipoJuego.equals("NReinas-8") || tipoJuego.equals("RecorridoCaballo-8") || tipoJuego.equals("TorresHanoi-5")) return "red";
         return "black";
     }
 }

@@ -15,6 +15,7 @@ public class ControladorHanoi {
         ResultadoHanoi resultado = new ResultadoHanoi(
                 juego.getCantidadDiscos(),
                 juego.getCantidadPasos(),
+                true,
                 true
         );
         Partida partida = resultado.toPartida();
