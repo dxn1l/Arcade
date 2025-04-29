@@ -1,5 +1,7 @@
 package arcade.vista;
 
+import arcade.fabrica.FabricaJuegos;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -31,7 +33,7 @@ public class MenuPrincipal extends JFrame {
 
             if (seleccion != null) {
                 int n = Integer.parseInt(seleccion.substring(0, 1));
-                mostrarPanel(new PanelNReinas(n));
+                mostrarPanel(FabricaJuegos.crearJuego("NReinas", n));
             }
         });
 
@@ -50,7 +52,7 @@ public class MenuPrincipal extends JFrame {
 
             if (seleccion != null) {
                 int n = Integer.parseInt(seleccion.substring(0, 1));
-                mostrarPanel(new PanelCaballo(n));
+                mostrarPanel(FabricaJuegos.crearJuego("Caballo", n));
             }
         });
 
@@ -70,7 +72,7 @@ public class MenuPrincipal extends JFrame {
 
         if (seleccion != null) {
             int discos = Integer.parseInt(seleccion);
-            mostrarPanel(new PanelHanoi(discos));
+            mostrarPanel(FabricaJuegos.crearJuego("Hanoi", discos));
         }
     });
         menuJuegos.add(itemHanoi);
