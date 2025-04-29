@@ -1,0 +1,18 @@
+package arcade.persistencia;
+
+import org.junit.jupiter.api.Test;
+import java.time.LocalDateTime;
+import static org.assertj.core.api.Assertions.assertThat;
+
+public class PartidaTest {
+
+    @Test
+    void debeGuardarYRecuperarPartida() {
+        Partida partida = new Partida("TestJuego", "Resultado de prueba", LocalDateTime.now());
+        partida.guardar();
+
+        var historial = Partida.obtenerHistorial();
+        assertThat(historial).isNotEmpty();
+        assertThat(historial.get(historial.size() - 1).getTipoJuego()).isEqualTo("TestJuego");
+    }
+}
