@@ -55,7 +55,25 @@ public class MenuPrincipal extends JFrame {
         });
 
 
-        // JMenuItem itemHanoi = new JMenuItem("Torres de Hanoi");
+        JMenuItem itemHanoi = new JMenuItem("Torres de Hanoi");
+        itemHanoi.addActionListener(e ->   {
+            String[] opciones = {"3", "4", "5"};
+        String seleccion = (String) JOptionPane.showInputDialog(
+                this,
+                "Selecciona el número de discos:",
+                "Torres de Hanoi",
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                opciones,
+                opciones[0]
+        );
+
+        if (seleccion != null) {
+            int discos = Integer.parseInt(seleccion);
+            mostrarPanel(new PanelHanoi(discos));
+        }
+    });
+        menuJuegos.add(itemHanoi);
 
         menuJuegos.add(itemNReinas);
         menuJuegos.add(itemCaballo);

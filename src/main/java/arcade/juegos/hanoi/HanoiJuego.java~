@@ -1,0 +1,4 @@
+package arcade.juegos.hanoi;
+
+public class HanoiJuego {
+}
