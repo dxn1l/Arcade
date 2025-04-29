@@ -18,6 +18,8 @@ public class PanelHanoi extends JPanel {
     private final JButton btnReiniciar;
     private final JButton btnLimpiar;
     private final JButton btnResolver;
+    private boolean juegoCompletado = false;
+
 
     public PanelHanoi(int cantidadDiscos) {
         this.cantidadDiscos = cantidadDiscos;
@@ -139,8 +141,11 @@ public class PanelHanoi extends JPanel {
                 if (postes[2].getComponentCount() - 1 == cantidadDiscos) {
                     JOptionPane.showMessageDialog(this, "¡Felicidades! Has resuelto Hanoi en " + movimientos + " movimientos.");
                     if (!resolviendo) {
-                        guardarPartida(true);  // Solo guardamos si fue una partida manual
+                        guardarPartida(true);
+                        btnReiniciar.setEnabled(false);
+                        btnLimpiar.setEnabled(true);
                     }
+                    colorearDiscosFinal(Color.GREEN);
                     bloquearPostes();
                 }
             }
@@ -170,6 +175,7 @@ public class PanelHanoi extends JPanel {
         origen.repaint();
         destino.revalidate();
         destino.repaint();
+        juegoCompletado = true;
         return true;
     }
 
@@ -193,6 +199,7 @@ public class PanelHanoi extends JPanel {
     private void reiniciar() {
         if (resolviendo) return;
         posteOrigen = null;
+        guardarReinicio();
         inicializarDiscos(cantidadDiscos);
     }
 
@@ -232,11 +239,14 @@ public class PanelHanoi extends JPanel {
                 JOptionPane.showMessageDialog(PanelHanoi.this, "¡Resolución automática completada!");
                 bloquearPostes();
                 resolviendo = false;
+                colorearDiscosFinal(Color.GREEN);
+                juegoCompletado = true;
             }
         }.execute();
     }
 
     private void limpiarTablero() {
+        if (!juegoCompletado) return;
         posteOrigen = null;
         resolviendo = false;
         movimientos = 0;
@@ -263,9 +273,27 @@ public class PanelHanoi extends JPanel {
         revalidate();
         repaint();
 
+        juegoCompletado = false;
         btnLimpiar.setEnabled(false);
         btnReiniciar.setEnabled(false);
         btnResolver.setEnabled(true);
+
+    }
+
+    private void colorearDiscosFinal(Color color) {
+        for (JPanel poste : postes) {
+            for (Component comp : poste.getComponents()) {
+                if (comp instanceof JPanel disco) {
+                    disco.setBackground(color);
+                }
+            }
+        }
+    }
+
+    private void guardarReinicio() {
+        String tipo = "TorresHanoi-" + cantidadDiscos;
+        String resumen = "Juego reiniciado por el usuario. " + movimientos + " movimientos registrados.";
+        new arcade.persistencia.Partida(tipo, resumen, java.time.LocalDateTime.now()).guardar();
     }
 
 
