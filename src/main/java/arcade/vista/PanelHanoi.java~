@@ -273,9 +273,11 @@ public class PanelHanoi extends JPanel {
         revalidate();
         repaint();
 
+        juegoCompletado = false;
         btnLimpiar.setEnabled(false);
         btnReiniciar.setEnabled(false);
         btnResolver.setEnabled(true);
+
     }
 
     private void colorearDiscosFinal(Color color) {

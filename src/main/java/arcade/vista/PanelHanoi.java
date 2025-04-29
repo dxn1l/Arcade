@@ -210,7 +210,9 @@ public class PanelHanoi extends JPanel {
         posteOrigen = null;
         inicializarDiscos(cantidadDiscos);
 
-        ControladorHanoi controlador = new ControladorHanoi(cantidadDiscos);
+        arcade.fabrica.JuegoAbstractFactory factory = arcade.fabrica.FabricaJuegosCompleta.obtenerFactory("Hanoi");
+        arcade.juegos.hanoi.ControladorHanoi controlador =
+                (arcade.juegos.hanoi.ControladorHanoi) factory.crearControlador(cantidadDiscos);
         controlador.resolver();
         List<int[]> pasos = controlador.obtenerPasos();
 

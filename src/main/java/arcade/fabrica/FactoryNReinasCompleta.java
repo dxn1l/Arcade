@@ -1,0 +1,24 @@
+package arcade.fabrica;
+
+import arcade.juegos.nreinas.NReinasJuego;
+import arcade.vista.PanelNReinas;
+
+import javax.swing.JPanel;
+
+public class FactoryNReinasCompleta implements JuegoAbstractFactory {
+
+    @Override
+    public NReinasJuego crearLogica(int tamaño) {
+        return new NReinasJuego(tamaño);
+    }
+
+    @Override
+    public Object crearControlador(int tamaño) {
+        return null;
+    }
+
+    @Override
+    public JPanel crearPanel(int tamaño) {
+        return new PanelNReinas(tamaño);
+    }
+}

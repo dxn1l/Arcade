@@ -169,7 +169,9 @@ public class PanelCaballo extends JPanel {
 
             @Override
             protected Void doInBackground() throws Exception {
-                ControladorCaballo controlador = new ControladorCaballo(N);
+                arcade.fabrica.JuegoAbstractFactory factory = arcade.fabrica.FabricaJuegosCompleta.obtenerFactory("Caballo");
+                arcade.juegos.caballo.ControladorCaballo controlador =
+                        (arcade.juegos.caballo.ControladorCaballo) factory.crearControlador(N);
                 ResultadoCaballo resultado = controlador.resolver();
                 recorrido = resultado.getRecorrido();
                 for (int i = 0; i < recorrido.size(); i++) {

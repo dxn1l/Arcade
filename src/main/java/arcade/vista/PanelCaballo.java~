@@ -238,7 +238,6 @@ public class PanelCaballo extends JPanel {
                 celdas[fila][col].setBackground((fila + col) % 2 == 0 ? Color.WHITE : new Color(200, 200, 200));
                 visitadas[fila][col] = false;
                 celdas[fila][col].setEnabled(true);
-                resolviendo = false;
             }
         }
         filaActual = -1;
@@ -246,7 +245,7 @@ public class PanelCaballo extends JPanel {
         movimientos = 0;
         contadorLabel.setText("Movimientos: 0");
         mensajeLabel.setText("Selecciona una casilla para comenzar");
-
+        resolviendo = false;
     }
 
     private boolean esMovimientoValido(int fila, int col) {
