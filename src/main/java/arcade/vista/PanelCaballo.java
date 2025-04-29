@@ -25,13 +25,17 @@ public class PanelCaballo extends JPanel {
     private boolean resolviendo = false;
     private JButton btnReiniciar;
     private JButton btnResolverAuto;
+    private final Runnable volverAccion;
 
 
 
-    public PanelCaballo(int N) {
+
+    public PanelCaballo(int N, Runnable volverAccion) {
+
         this.N = N;
         this.celdas = new JButton[N][N];
         this.visitadas = new boolean[N][N];
+        this.volverAccion = volverAccion;
 
         setLayout(new BorderLayout());
 
@@ -47,6 +51,11 @@ public class PanelCaballo extends JPanel {
         add(panelTablero, BorderLayout.CENTER);
 
         JPanel panelInferior = new JPanel(new FlowLayout());
+
+        JButton btnVolver = new JButton("Volver al menú");
+        btnVolver.addActionListener(e -> volverAccion.run());
+        panelInferior.add(btnVolver);
+
 
         btnReiniciar = new JButton("Reiniciar recorrido");
         btnReiniciar.addActionListener(e -> reiniciarRecorrido());

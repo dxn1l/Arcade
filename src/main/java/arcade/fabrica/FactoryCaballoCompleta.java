@@ -4,7 +4,7 @@ import arcade.juegos.caballo.CaballoJuego;
 import arcade.juegos.caballo.ControladorCaballo;
 import arcade.vista.PanelCaballo;
 
-import javax.swing.JPanel;
+import javax.swing.*;
 
 public class FactoryCaballoCompleta implements JuegoAbstractFactory {
 
@@ -18,8 +18,10 @@ public class FactoryCaballoCompleta implements JuegoAbstractFactory {
         return new ControladorCaballo(tamaño);
     }
 
+
     @Override
-    public JPanel crearPanel(int tamaño) {
-        return new PanelCaballo(tamaño);
+    public JPanel crearPanelConAccion(int tamaño, Runnable volverAccion) {
+        return new PanelCaballo(tamaño,  volverAccion);
     }
+
 }

@@ -21,7 +21,7 @@ public class PanelHanoi extends JPanel {
     private boolean juegoCompletado = false;
 
 
-    public PanelHanoi(int cantidadDiscos) {
+    public PanelHanoi(int cantidadDiscos , Runnable volverAccion) {
         this.cantidadDiscos = cantidadDiscos;
         setLayout(new BorderLayout());
 
@@ -48,6 +48,10 @@ public class PanelHanoi extends JPanel {
         add(panelPostes, BorderLayout.CENTER);
 
         JPanel panelInferior = new JPanel(new FlowLayout());
+
+        JButton btnVolver = new JButton("Volver al menú");
+        btnVolver.addActionListener(e -> volverAccion.run());
+        panelInferior.add(btnVolver);
 
         btnReiniciar = new JButton("Reiniciar partida");
         btnReiniciar.setEnabled(false);

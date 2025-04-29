@@ -20,7 +20,7 @@ public class PanelNReinas extends JPanel {
     private final JLabel contadorLabel;
     private final JLabel cantidadLabel;
 
-    public PanelNReinas(int N) {
+    public PanelNReinas(int N , Runnable volverAccion) {
 
         this.N = N;
         this.celdas = new JButton[N][N];
@@ -40,6 +40,11 @@ public class PanelNReinas extends JPanel {
         add(panelTablero, BorderLayout.CENTER);
 
         JPanel panelInferior = new JPanel(new FlowLayout());
+
+        JButton btnVolver = new JButton("Volver al menú");
+        btnVolver.addActionListener(e -> volverAccion.run());
+        panelInferior.add(btnVolver);
+
 
         mensajeLabel = new JLabel("Haz clic para colocar o quitar reinas", SwingConstants.CENTER);
         mensajeLabel.setFont(new Font("SansSerif", Font.PLAIN, 13));
@@ -95,7 +100,7 @@ public class PanelNReinas extends JPanel {
                 return;
             }
             tablero[fila][col] = 1;
-            celdas[fila][col].setText("Q");
+            celdas[fila][col].setText("♛");
         } else {
             tablero[fila][col] = 0;
             celdas[fila][col].setText("");
@@ -173,7 +178,7 @@ public class PanelNReinas extends JPanel {
             int fila = coord[0];
             int col = coord[1];
             tablero[fila][col] = 1;
-            celdas[fila][col].setText("Q");
+            celdas[fila][col].setText("♛");
         }
 
         actualizarContador();
@@ -207,7 +212,7 @@ public class PanelNReinas extends JPanel {
         List<int[]> coords = new ArrayList<int[]>();
         for (int fila = 0; fila < N; fila++) {
             for (int col = 0; col < N; col++) {
-                if ("Q".equals(celdas[fila][col].getText())) {
+                if ("♛".equals(celdas[fila][col].getText())) {
                     coords.add(new int[]{fila, col});
                 }
             }

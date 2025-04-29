@@ -2,9 +2,10 @@ package arcade.fabrica;
 
 import arcade.juegos.hanoi.HanoiJuego;
 import arcade.juegos.hanoi.ControladorHanoi;
+import arcade.vista.PanelCaballo;
 import arcade.vista.PanelHanoi;
 
-import javax.swing.JPanel;
+import javax.swing.*;
 
 public class FactoryHanoiCompleta implements JuegoAbstractFactory {
 
@@ -19,7 +20,7 @@ public class FactoryHanoiCompleta implements JuegoAbstractFactory {
     }
 
     @Override
-    public JPanel crearPanel(int discos) {
-        return new PanelHanoi(discos);
+    public JPanel crearPanelConAccion(int discos, Runnable volverAccion) {
+        return new PanelCaballo(discos,  volverAccion);
     }
 }

@@ -1,9 +1,10 @@
 package arcade.fabrica;
 
 import arcade.juegos.nreinas.NReinasJuego;
+import arcade.vista.PanelCaballo;
 import arcade.vista.PanelNReinas;
 
-import javax.swing.JPanel;
+import javax.swing.*;
 
 public class FactoryNReinasCompleta implements JuegoAbstractFactory {
 
@@ -18,7 +19,7 @@ public class FactoryNReinasCompleta implements JuegoAbstractFactory {
     }
 
     @Override
-    public JPanel crearPanel(int tamaño) {
-        return new PanelNReinas(tamaño);
+    public JPanel crearPanelConAccion(int tamaño, Runnable volverAccion) {
+        return new PanelCaballo(tamaño,  volverAccion);
     }
 }

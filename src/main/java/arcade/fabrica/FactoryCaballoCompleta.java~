@@ -1,4 +1,27 @@
 package arcade.fabrica;
 
-public class FactoryCaballoCompleta {
+import arcade.juegos.caballo.CaballoJuego;
+import arcade.juegos.caballo.ControladorCaballo;
+import arcade.vista.PanelCaballo;
+
+import javax.swing.*;
+
+public class FactoryCaballoCompleta implements JuegoAbstractFactory {
+
+    @Override
+    public CaballoJuego crearLogica(int tamaño) {
+        return new CaballoJuego(tamaño);
+    }
+
+    @Override
+    public ControladorCaballo crearControlador(int tamaño) {
+        return new ControladorCaballo(tamaño);
+    }
+
+
+    @Override
+    public JPanel crearPanelConAccion(int tamaño, JFrame ventana) {
+        return new PanelCaballo(tamaño,  volverAccion);
+    }
+
 }
