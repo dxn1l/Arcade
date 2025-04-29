@@ -25,13 +25,17 @@ public class PanelCaballo extends JPanel {
     private boolean resolviendo = false;
     private JButton btnReiniciar;
     private JButton btnResolverAuto;
+    private final Runnable volverAccion;
 
 
 
-    public PanelCaballo(int N) {
+
+    public PanelCaballo(int N, Runnable volverAccion) {
+
         this.N = N;
         this.celdas = new JButton[N][N];
         this.visitadas = new boolean[N][N];
+        this.volverAccion = volverAccion;
 
         setLayout(new BorderLayout());
 
@@ -47,6 +51,15 @@ public class PanelCaballo extends JPanel {
         add(panelTablero, BorderLayout.CENTER);
 
         JPanel panelInferior = new JPanel(new FlowLayout());
+
+        JButton btnVolver = new JButton("Volver al menú");
+        btnVolver.addActionListener(e -> {
+            ventanaPrincipal.getContentPane().removeAll();
+            ventanaPrincipal.getContentPane().add(new MenuPrincipal().getContentPane(), BorderLayout.CENTER);
+            ventanaPrincipal.revalidate();
+            ventanaPrincipal.repaint();
+        });
+        panelInferior.add(btnVolver);
 
         btnReiniciar = new JButton("Reiniciar recorrido");
         btnReiniciar.addActionListener(e -> reiniciarRecorrido());
@@ -169,7 +182,9 @@ public class PanelCaballo extends JPanel {
 
             @Override
             protected Void doInBackground() throws Exception {
-                ControladorCaballo controlador = new ControladorCaballo(N);
+                arcade.fabrica.JuegoAbstractFactory factory = arcade.fabrica.FabricaJuegosCompleta.obtenerFactory("Caballo");
+                arcade.juegos.caballo.ControladorCaballo controlador =
+                        (arcade.juegos.caballo.ControladorCaballo) factory.crearControlador(N);
                 ResultadoCaballo resultado = controlador.resolver();
                 recorrido = resultado.getRecorrido();
                 for (int i = 0; i < recorrido.size(); i++) {
@@ -238,7 +253,6 @@ public class PanelCaballo extends JPanel {
                 celdas[fila][col].setBackground((fila + col) % 2 == 0 ? Color.WHITE : new Color(200, 200, 200));
                 visitadas[fila][col] = false;
                 celdas[fila][col].setEnabled(true);
-                resolviendo = false;
             }
         }
         filaActual = -1;
@@ -246,7 +260,7 @@ public class PanelCaballo extends JPanel {
         movimientos = 0;
         contadorLabel.setText("Movimientos: 0");
         mensajeLabel.setText("Selecciona una casilla para comenzar");
-
+        resolviendo = false;
     }
 
     private boolean esMovimientoValido(int fila, int col) {

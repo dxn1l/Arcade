@@ -1,0 +1,31 @@
+package arcade.juegos.nreinas;
+
+import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.Assertions.assertThat;
+
+public class NReinasJuegoTest {
+
+    @Test
+    void debeResolverCorrectamenteParaN4() {
+        NReinasJuego juego = new NReinasJuego(4);
+        assertThat(juego.resolver()).isTrue();
+        assertThat(juego.getSolucion()).hasSize(4);
+    }
+
+    @Test
+    void debeDevolverSolucionValida() {
+        NReinasJuego juego = new NReinasJuego(6);
+        juego.resolver();
+        for (int[] reina1 : juego.getSolucion()) {
+            for (int[] reina2 : juego.getSolucion()) {
+                if (reina1 != reina2) {
+                    boolean seAtacan =
+                            reina1[0] == reina2[0] ||
+                                    reina1[1] == reina2[1] ||
+                                    Math.abs(reina1[0] - reina2[0]) == Math.abs(reina1[1] - reina2[1]);
+                    assertThat(seAtacan).isFalse();
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,45 @@
+package arcade.juegos.hanoi;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class HanoiJuego {
+
+    private final int cantidadDiscos;
+    private final List<int[]> pasos;
+
+    public HanoiJuego(int cantidadDiscos) {
+        this.cantidadDiscos = cantidadDiscos;
+        this.pasos = new ArrayList<>();
+    }
+
+    public void resolver() {
+        pasos.clear();
+        resolverRecursivo(cantidadDiscos, 0, 2, 1);
+    }
+
+    private void resolverRecursivo(int n, int origen, int destino, int auxiliar) {
+        if (n == 1) {
+            pasos.add(new int[]{origen, destino});
+        } else {
+            resolverRecursivo(n - 1, origen, auxiliar, destino);
+            pasos.add(new int[]{origen, destino});
+            resolverRecursivo(n - 1, auxiliar, destino, origen);
+        }
+    }
+
+
+    public List<int[]> obtenerPasos() {
+        return pasos;
+    }
+
+
+    public int getCantidadPasos() {
+        return pasos.size();
+    }
+
+    public int getCantidadDiscos() {
+        return cantidadDiscos;
+    }
+}
+

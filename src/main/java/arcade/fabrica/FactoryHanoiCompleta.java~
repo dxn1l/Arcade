@@ -1,0 +1,25 @@
+package arcade.fabrica;
+
+import arcade.juegos.hanoi.HanoiJuego;
+import arcade.juegos.hanoi.ControladorHanoi;
+import arcade.vista.PanelHanoi;
+
+import javax.swing.*;
+
+public class FactoryHanoiCompleta implements JuegoAbstractFactory {
+
+    @Override
+    public HanoiJuego crearLogica(int discos) {
+        return new HanoiJuego(discos);
+    }
+
+    @Override
+    public ControladorHanoi crearControlador(int discos) {
+        return new ControladorHanoi(discos);
+    }
+
+    @Override
+    public JPanel crearPanelConVentana(int discos , JFrame ventana) {
+        return new PanelHanoi(discos , ventana);
+    }
+}

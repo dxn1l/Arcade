@@ -1,5 +1,8 @@
 package arcade.vista;
 
+import arcade.fabrica.FabricaJuegosCompleta;
+import arcade.fabrica.JuegoAbstractFactory;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -13,72 +16,79 @@ public class MenuPrincipal extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        JMenuBar menuBar = new JMenuBar();
-
-        JMenu menuJuegos = new JMenu("Juegos");
-        JMenuItem itemNReinas = new JMenuItem("N Reinas");
-        itemNReinas.addActionListener(e -> {
-            String[] opciones = {"4x4", "6x6", "8x8"};
-            String seleccion = (String) JOptionPane.showInputDialog(
-                    this,
-                    "Selecciona el tamaño del tablero:",
-                    "Tamaño del tablero",
-                    JOptionPane.QUESTION_MESSAGE,
-                    null,
-                    opciones,
-                    "8x8"
-            );
-
-            if (seleccion != null) {
-                int n = Integer.parseInt(seleccion.substring(0, 1));
-                mostrarPanel(new PanelNReinas(n));
-            }
-        });
-
-        JMenuItem itemCaballo = new JMenuItem("Recorrido del Caballo");
-        itemCaballo.addActionListener(e -> {
-            String[] opciones = {"5x5", "6x6", "8x8"};
-            String seleccion = (String) JOptionPane.showInputDialog(
-                    this,
-                    "Selecciona el tamaño del tablero:",
-                    "Tamaño del tablero",
-                    JOptionPane.QUESTION_MESSAGE,
-                    null,
-                    opciones,
-                    "8x8"
-            );
-
-            if (seleccion != null) {
-                int n = Integer.parseInt(seleccion.substring(0, 1)); // toma el número inicial
-                mostrarPanel(new PanelCaballo(n));
-            }
-        });
-
-
-        // JMenuItem itemHanoi = new JMenuItem("Torres de Hanoi");
-
-        menuJuegos.add(itemNReinas);
-        menuJuegos.add(itemCaballo);
-        menuBar.add(menuJuegos);
-
-        JMenu menuOpciones = new JMenu("Opciones");
-        JMenuItem itemHistorial = new JMenuItem("Ver historial de partidas");
-
-        itemHistorial.addActionListener(e -> {
-            new VentanaHistorial().setVisible(true);
-        });
-
-        menuOpciones.add(itemHistorial);
-        menuBar.add(menuOpciones);
-
-        setJMenuBar(menuBar);
-
         panelContenedor = new JPanel(new BorderLayout());
         add(panelContenedor, BorderLayout.CENTER);
 
-        JLabel labelBienvenida = new JLabel("Selecciona un juego desde el menú", SwingConstants.CENTER);
-        panelContenedor.add(labelBienvenida, BorderLayout.CENTER);
+        mostrarMenuPrincipal();
+
     }
+
+    private void mostrarMenuPrincipal() {
+        panelContenedor.removeAll();
+
+        JPanel menuPanel = new JPanel(new GridLayout(1, 3, 30, 30));
+        menuPanel.setBorder(BorderFactory.createEmptyBorder(60, 40, 60, 40));
+
+        JButton btnReinas = crearBotonJuego("N Reinas", "♛");
+        btnReinas.addActionListener(e -> {
+            int n = elegirTamaño("N Reinas", new String[]{"4x4", "6x6", "8x8"});
+            if (n > 0) {
+                JuegoAbstractFactory factory = FabricaJuegosCompleta.obtenerFactory("NReinas");
+                mostrarPanel(factory.crearPanelConAccion(n , () -> mostrarMenuPrincipal()));
+            }
+        });
+
+        JButton btnCaballo = crearBotonJuego("Recorrido del Caballo", "♞");
+        btnCaballo.addActionListener(e -> {
+            int n = elegirTamaño("Caballo", new String[]{"5x5", "6x6", "8x8"});
+            if (n > 0) {
+                JuegoAbstractFactory factory = FabricaJuegosCompleta.obtenerFactory("Caballo");
+                mostrarPanel(factory.crearPanelConAccion(n , () -> mostrarMenuPrincipal()));
+            }
+        });
+
+        JButton btnHanoi = crearBotonJuego("Torres de Hanoi", "🗼");
+        btnHanoi.addActionListener(e -> {
+            int n = elegirTamaño("Torres de Hanoi", new String[]{"3", "4", "5"});
+            if (n > 0) {
+                JuegoAbstractFactory factory = FabricaJuegosCompleta.obtenerFactory("Hanoi");
+                mostrarPanel(factory.crearPanelConAccion(n , () -> mostrarMenuPrincipal()));
+            }
+        });
+
+        menuPanel.add(btnReinas);
+        menuPanel.add(btnCaballo);
+        menuPanel.add(btnHanoi);
+
+        panelContenedor.add(menuPanel, BorderLayout.CENTER);
+        panelContenedor.revalidate();
+        panelContenedor.repaint();
+    }
+
+    private JButton crearBotonJuego(String texto, String iconoUnicode) {
+        JButton btn = new JButton("<html><center>" + iconoUnicode + "<br>" + texto + "</center></html>");
+        btn.setFont(new Font("SansSerif", Font.BOLD, 26));
+        btn.setFocusPainted(false);
+        btn.setBackground(new Color(220, 235, 255));
+        btn.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 2));
+        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        return btn;
+    }
+
+    private int elegirTamaño(String juego, String[] opciones) {
+        String seleccion = (String) JOptionPane.showInputDialog(
+                this,
+                "Selecciona el tamaño:",
+                juego,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                opciones,
+                opciones[0]
+        );
+        if (seleccion == null) return -1;
+        return Integer.parseInt(seleccion.substring(0, 1));
+    }
+
 
     private void mostrarPanel(JPanel nuevoPanel) {
         panelContenedor.removeAll();

@@ -6,19 +6,14 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public class ResultadoCaballo {
-
     private final int N;
-    private final boolean exito;
     private final List<int[]> recorrido;
+    private final boolean completo;
 
-    public ResultadoCaballo(int N, boolean exito, List<int[]> recorrido) {
+    public ResultadoCaballo(int N, List<int[]> recorrido, boolean completo) {
         this.N = N;
-        this.exito = exito;
         this.recorrido = recorrido;
-    }
-
-    public boolean esExitoso() {
-        return exito;
+        this.completo = completo;
     }
 
     public List<int[]> getRecorrido() {
@@ -26,9 +21,9 @@ public class ResultadoCaballo {
     }
 
     public Partida toPartida() {
-        String resumen = exito
-                ? "Recorrido completo con " + recorrido.size() + " casillas."
-                : "Recorrido incompleto. Se visitaron " + recorrido.size() + " casillas.";
+        String resumen = completo ?
+                "Recorrido completo con " + recorrido.size() + " movimientos." :
+                "Recorrido incompleto. Solo se visitaron " + recorrido.size() + " casillas.";
         return new Partida("RecorridoCaballo-" + N, resumen, LocalDateTime.now());
     }
 }

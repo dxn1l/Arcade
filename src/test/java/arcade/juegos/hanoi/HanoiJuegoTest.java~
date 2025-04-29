@@ -1,0 +1,15 @@
+package arcade.juegos.hanoi;
+
+import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.Assertions.assertThat;
+
+public class HanoiJuegoTest {
+
+    @Test
+    void debeResolverHanoiCon3Discos() {
+        ControladorHanoi controlador = new ControladorHanoi(3);
+        ResultadoHanoi resultado = controlador.resolver();
+        assertThat(resultado.getCantidadMovimientos()).isEqualTo(7); // 2^3 - 1
+        assertThat(resultado.getPasos()).hasSize(7);
+    }
+}

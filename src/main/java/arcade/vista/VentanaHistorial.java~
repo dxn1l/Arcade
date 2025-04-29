@@ -30,14 +30,18 @@ public class VentanaHistorial extends JFrame {
         nodoNReinas.add(new DefaultMutableTreeNode("NReinas-6"));
         nodoNReinas.add(new DefaultMutableTreeNode("NReinas-8"));
         raiz.add(nodoNReinas);
-        
+
         DefaultMutableTreeNode nodoCaballo = new DefaultMutableTreeNode("RecorridoCaballo");
         nodoCaballo.add(new DefaultMutableTreeNode("RecorridoCaballo-5"));
         nodoCaballo.add(new DefaultMutableTreeNode("RecorridoCaballo-6"));
         nodoCaballo.add(new DefaultMutableTreeNode("RecorridoCaballo-8"));
         raiz.add(nodoCaballo);
 
-        raiz.add(new DefaultMutableTreeNode("TorresHanoi"));
+        DefaultMutableTreeNode nodoHanoi = new DefaultMutableTreeNode("TorresHanoi"));
+        nodoHanoi.add(new DefaultMutableTreeNode("TorresHanoi-3"));
+        nodoHanoi.add(new DefaultMutableTreeNode("TorresHanoi-4"));
+        nodoHanoi.add(new DefaultMutableTreeNode("TorresHanoi-5"));
+        raiz.add(nodoHanoi);
 
         arbolFiltros = new JTree(raiz);
         arbolFiltros.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
